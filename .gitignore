@@ -1,3 +1,6 @@
+# API 키 (Git에 올리지 않음). 템플릿: assets/env.example
+assets/env
+
 # Miscellaneous
 *.class
 *.log

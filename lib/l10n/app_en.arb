@@ -1,0 +1,113 @@
+{
+  "@@locale": "en",
+  "appTitle": "QuickDine",
+  "searchTitle": "QuickDine - Nearby Restaurants",
+  "favorites": "Favorites",
+  "settings": "Settings",
+  "mapTapHint": "Tap the map to choose a search location, then tap Search.",
+  "searchCoords": "Search coords: {lat}, {lng}",
+  "@searchCoords": {
+    "placeholders": {
+      "lat": {"type": "String"},
+      "lng": {"type": "String"}
+    }
+  },
+  "searchRadius": "Search radius",
+  "searchRadiusMeters": "{meters}m",
+  "@searchRadiusMeters": {
+    "placeholders": {
+      "meters": {"type": "int"}
+    }
+  },
+  "searchMaxCount": "Max results",
+  "searchCountOption": "{count} places",
+  "@searchCountOption": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "searchAtLocation": "Search here",
+  "searchPill": "Search",
+  "searching": "Searching...",
+  "errorPrefix": "Error",
+  "movedToCurrentLocation": "Moved map to current location.",
+  "locationErrorPrefix": "Location error",
+  "quickPin": "Quick Pin",
+  "searchLocation": "Search location",
+  "quickPinAdd": "Add Quick Pin",
+  "placeName": "Place name",
+  "placeNameHint": "e.g. Tokyo Station",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
+  "cancel": "Cancel",
+  "save": "Save",
+  "quickPinSaved": "Saved Quick Pin \"{name}\".",
+  "@quickPinSaved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickPinDelete": "Delete Quick Pin",
+  "quickPinDeleteConfirm": "Delete Quick Pin \"{name}\"?",
+  "@quickPinDeleteConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "delete": "Delete",
+  "close": "Close",
+  "addCurrentLocation": "Add current location",
+  "quickPinEmptyHint": "Pick a location on the map,\nthen tap \"Add current location\".",
+  "searchResults": "Results ({count})",
+  "@searchResults": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "listEmpty": "No restaurants found nearby.\nTry increasing the radius or max results.",
+  "shopDetail": "Shop details",
+  "showOnMap": "Show on map",
+  "shopLocationUnavailable": "This shop has no location data.",
+  "showedShopOnMap": "Showing \"{name}\" on the map.",
+  "@showedShopOnMap": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "address": "Address",
+  "businessHours": "Hours",
+  "access": "Access",
+  "favoritesEmpty": "No favorite restaurants yet.\nTap ♥ on results or details to add one.",
+  "addFavorite": "Add to favorites",
+  "removeFavorite": "Remove from favorites",
+  "settingsTitle": "Settings",
+  "sectionSearch": "Search",
+  "defaultMaxSearchCount": "Default max results",
+  "defaultMaxSearchCountHint": "Max shops per API request and on-screen display. Caps load even at 3000m radius.",
+  "defaultSearchRadius": "Default search radius",
+  "defaultSearchRadiusHint": "Default radius when opening the search screen.",
+  "sectionLanguage": "Language",
+  "language": "App language",
+  "languageSystem": "System default",
+  "languageKorean": "Korean",
+  "languageJapanese": "Japanese",
+  "languageEnglish": "English",
+  "sectionData": "Data",
+  "clearAllFavorites": "Clear all favorites",
+  "clearAllFavoritesSubtitle": "Remove locally saved favorites",
+  "clearAllQuickPins": "Clear all Quick Pins",
+  "clearAllQuickPinsSubtitle": "Remove locally saved Quick Pins",
+  "confirmClearFavorites": "Clear all favorites",
+  "confirmClearFavoritesMessage": "Delete all saved favorites?",
+  "favoritesCleared": "All favorites deleted.",
+  "confirmClearQuickPins": "Clear all Quick Pins",
+  "confirmClearQuickPinsMessage": "Delete all saved Quick Pins?",
+  "quickPinsCleared": "All Quick Pins deleted.",
+  "sectionAppInfo": "About",
+  "appDescription": "Nearby restaurant search using HotPepper API",
+  "dataProvider": "Data provider",
+  "dataProviderValue": "Restaurant info: ホットペッパーグルメ Webサービス",
+  "locationServiceDisabled": "Location services are disabled. Please turn on GPS in settings.",
+  "locationPermissionDenied": "Location permission denied.",
+  "locationPermissionDeniedForever": "Location permission permanently denied. Allow it in app settings."
+}
