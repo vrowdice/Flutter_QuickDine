@@ -4,80 +4,39 @@
 
 | File | Role |
 |------|------|
-| `screens/search_screen.dart` | Layout orchestration, sheet extent, pill position |
-| `widgets/search_map_stack.dart` | Map overlays: Quick Pin, my-location, bouncy pin button |
-| `widgets/map_location_picker.dart` | Google Map, circle, markers, padding, camera |
-| `widgets/search_floating_controls.dart` | Top floating radius/count card |
-| `widgets/search_pill_button.dart` | Bottom-center search CTA |
-| `widgets/search_results_sheet.dart` | DraggableScrollableSheet list |
-| `widgets/quick_pin_panel.dart` | Slide-in pin manager |
-| `constants/search_radius.dart` | Range 1~5 → meters |
-| `services/location_service.dart` | GPS + `LocationException` |
+| `search_screen.dart` | Layout, sheet extent, genre/radius state |
+| `search_map_stack.dart` | Quick Pin, my-location, bouncy pin button |
+| `map_location_picker.dart` | Map, circle, markers, padding, `fitToSearchResults` |
+| `search_floating_controls.dart` | **Unified search panel** (dropdowns + genre chips) |
+| `search_pill_button.dart` | Bottom search CTA |
+| `search_results_sheet.dart` | Draggable result list |
+| `quick_pin_panel.dart` | Pin manager overlay |
 
-## Google Maps API key
+## Search panel inset
 
-Single source: `assets/env` → `GOOGLE_MAPS_API_KEY`
+`SearchFloatingControls.estimatedHeight` includes dropdown row + genre chip row. Pass as `topOverlayInset` to map and `MapLocationPicker.topPadding`.
 
-| Platform | Mechanism |
-|----------|-----------|
-| Flutter | `flutter_dotenv` + `MapsKeyService.initialize()` |
-| Android | `build.gradle.kts` → `manifestPlaceholders` → Manifest |
-| iOS | MethodChannel `quick_dine/maps_key` → `AppDelegate` |
+Genre chips: horizontal scroll, 16px end padding, 8px spacing, selected = primary fill.
 
-## Map markers & circle
+## Markers & circle
 
-| Overlay | Style | Notes |
-|---------|-------|-------|
-| Search center | Blue marker | Moves on tap / GPS / show-on-map |
-| Search radius | Primary-tinted `Circle` | Radius from `searchRadiusMeters(range)` |
-| Quick Pin | Colored by index | Tap → move search center |
-| Shop | Orange marker | Tap → `DetailScreen` |
+| Overlay | Style |
+|---------|-------|
+| Search center | Blue marker |
+| Radius | Primary-tinted `Circle` from `searchRadiusMeters(range)` |
+| Quick Pin | Colored by index |
+| Shop | Orange marker → `DetailScreen` |
 
-## Map padding & camera
+## Padding & camera
 
-- `GoogleMap.padding`: `top` = floating controls height; `bottom` = sheet extent × **body height** when sheet visible
-- **Body height** = `LayoutBuilder.constraints.maxHeight` (not full screen — AppBar excluded)
-- `fitToSearchResults()`: bounds edge padding ~48px only; **do not** add `bottomPadding` again to `newLatLngBounds` (causes "View size too small after padding")
-- On failure: fallback `newLatLngZoom` on search center
+- `GoogleMap.padding`: top = panel height; bottom = sheet extent × **body height**
+- `fitToSearchResults()`: ~48px bounds padding only — do not double-apply bottom padding in `newLatLngBounds`
 
-## SearchScreen overlay positions
+## Quick Pins & GPS
 
-| Control | Position |
-|---------|----------|
-| Floating filters | Top of body (`SearchFloatingControls`) |
-| Quick Pin + My location | Below filters; left/right aligned to `horizontalMargin` (12px) |
-| Search pill | Bottom-center; `bottom = sheetExtent × stackHeight + verticalMargin` |
-| Native zoom (+/-) | Bottom-right; no extra Flutter overlay on zoom area |
+- `moveTo()` / map tap / GPS clears `_searchResults` via `onLocationChanged`
+- Show-on-map from detail: update coords only, keep results
 
-Quick Pin button uses `_BouncyMapOverlayButton` (scale 0.92 on press, elastic release).
+## Japan-only
 
-## Bottom sheet (`SearchResultsSheet`)
-
-- `initialChildSize: 0.3`, `maxChildSize: 0.8`, `minChildSize: 0`
-- Snap: 0, 0.3, 0.8
-- Header: centered drag handle (Stack), close (X) right — `animateTo(0)` then `onDismissed`
-- Swipe to 0 also dismisses
-- `onExtentChanged` → parent updates `_sheetExtent` for pill + map padding sync
-
-## Quick Pins
-
-- Open: Quick Pin button (top-left below filters)
-- Add / select / delete / clear-all via panel + Settings
-- `moveTo()` on map/Quick Pin clears `_searchResults` in SearchScreen
-
-## GPS
-
-- Startup: silent `_applyCurrentLocation`
-- Manual: my-location button (same Y as Quick Pin)
-- Errors: `locationErrorMessage()` in `l10n_helpers.dart`
-
-## Show on map
-
-`DetailScreen` / `FavoritesScreen` → pop `Shop` → `_showShopOnMap`:
-- Update search center coords
-- Preserve/add shop in results
-- Avoid `moveTo()` to keep results
-
-## HotPepper constraint
-
-API accepts **Japanese coordinates** only. Default center: Tokyo Station.
+HotPepper accepts Japanese coordinates. Default: Tokyo Station.

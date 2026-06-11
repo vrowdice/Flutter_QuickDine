@@ -52,6 +52,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchPill => 'Search';
 
   @override
+  String get genreAll => 'All';
+
+  @override
+  String get genreIzakaya => 'Izakaya';
+
+  @override
+  String get genreJapanese => 'Japanese';
+
+  @override
+  String get genreItalianFrench => 'Italian/French';
+
+  @override
+  String get genreChinese => 'Chinese';
+
+  @override
+  String get genreYakiniku => 'Yakiniku';
+
+  @override
+  String get genreAsian => 'Asian/Ethnic';
+
+  @override
+  String get genreCafe => 'Cafe/Dessert';
+
+  @override
   String get searching => 'Searching...';
 
   @override
@@ -149,6 +173,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get access => 'Access';
 
   @override
+  String get detailCall => 'Call';
+
+  @override
+  String get detailWeb => 'Details / Reserve';
+
+  @override
+  String get averageBudget => 'Average budget';
+
+  @override
+  String get launchPhoneFailed => 'Could not open the phone app.';
+
+  @override
+  String get launchWebFailed => 'Could not open the shop page.';
+
+  @override
   String get favoritesEmpty =>
       'No favorite restaurants yet.\nTap ♥ on results or details to add one.';
 
@@ -240,6 +279,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataProviderValue => 'Restaurant info: ホットペッパーグルメ Webサービス';
+
+  @override
+  String get developedBy => 'Developed by';
 
   @override
   String get locationServiceDisabled =>

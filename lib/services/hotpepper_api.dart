@@ -22,24 +22,31 @@ class HotPepperApi {
 
   /// [count]: API `count` — max count로 1회 요청량 제한 (3000m 대량 방어)
   /// [range]: HotPepper `range` 1~5 (300m~3000m)
+  /// [genre]: HotPepper `genre` 코드 (예: G001). null이면 파라미터 생략
   Future<List<Shop>> searchShops({
     required double lat,
     required double lng,
     required int count,
     int range = kDefaultSearchRadius,
+    String? genre,
   }) async {
     final safeCount = clampSearchCount(count).clamp(1, ApiConstants.maxResultCount);
     final safeRange = clampSearchRadius(range);
 
+    final queryParameters = <String, String>{
+      'key': _apiKey,
+      'lat': lat.toString(),
+      'lng': lng.toString(),
+      'range': safeRange.toString(),
+      'format': 'json',
+      'count': safeCount.toString(),
+    };
+    if (genre != null && genre.isNotEmpty) {
+      queryParameters['genre'] = genre;
+    }
+
     final uri = Uri.parse(ApiConstants.hotPepperApiBaseUrl).replace(
-      queryParameters: {
-        'key': _apiKey,
-        'lat': lat.toString(),
-        'lng': lng.toString(),
-        'range': safeRange.toString(),
-        'format': 'json',
-        'count': safeCount.toString(),
-      },
+      queryParameters: queryParameters,
     );
 
     final response = await http.get(uri);

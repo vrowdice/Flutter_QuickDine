@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'l10n/app_localizations.dart';
-import 'screens/search_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/settings_service.dart';
+import 'theme/app_theme.dart';
 
 /// 앱 루트: MaterialApp, 테마, 로케일, 초기 화면 설정
 class QuickDineApp extends StatelessWidget {
@@ -14,12 +15,12 @@ class QuickDineApp extends StatelessWidget {
     return ListenableBuilder(
       listenable: SettingsService.instance,
       builder: (context, _) {
+        final locale = resolveAppLocale(SettingsService.instance.locale);
+
         return MaterialApp(
           title: 'QuickDine',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-            useMaterial3: true,
-          ),
+          debugShowCheckedModeBanner: false,
+          theme: buildAppTheme(locale: locale),
           locale: SettingsService.instance.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -28,7 +29,7 @@ class QuickDineApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SearchScreen(),
+          home: const SplashScreen(),
         );
       },
     );

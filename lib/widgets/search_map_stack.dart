@@ -124,7 +124,7 @@ class SearchMapStack extends StatelessWidget {
                       Icon(
                         Icons.push_pin,
                         size: 18,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -138,11 +138,12 @@ class SearchMapStack extends StatelessWidget {
                         const SizedBox(width: 6),
                         CircleAvatar(
                           radius: 10,
-                          backgroundColor: Colors.orange,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
                           child: Text(
                             '${pins.length}',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -161,7 +162,7 @@ class SearchMapStack extends StatelessWidget {
                 child: Icon(
                   Icons.my_location,
                   size: 22,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),

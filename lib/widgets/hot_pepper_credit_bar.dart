@@ -16,6 +16,8 @@ class HotPepperCreditBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SafeArea(
       top: false,
       child: Padding(
@@ -25,17 +27,20 @@ class HotPepperCreditBar extends StatelessWidget {
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Powered by ',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               InkWell(
                 onTap: _openServicePage,
-                child: const Text(
+                child: Text(
                   'ホットペッパーグルメ Webサービス',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.blue,
+                    color: colorScheme.secondary,
                     decoration: TextDecoration.underline,
                   ),
                 ),

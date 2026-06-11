@@ -172,6 +172,54 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get searchPill;
 
+  /// No description provided for @genreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get genreAll;
+
+  /// No description provided for @genreIzakaya.
+  ///
+  /// In en, this message translates to:
+  /// **'Izakaya'**
+  String get genreIzakaya;
+
+  /// No description provided for @genreJapanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese'**
+  String get genreJapanese;
+
+  /// No description provided for @genreItalianFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'Italian/French'**
+  String get genreItalianFrench;
+
+  /// No description provided for @genreChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get genreChinese;
+
+  /// No description provided for @genreYakiniku.
+  ///
+  /// In en, this message translates to:
+  /// **'Yakiniku'**
+  String get genreYakiniku;
+
+  /// No description provided for @genreAsian.
+  ///
+  /// In en, this message translates to:
+  /// **'Asian/Ethnic'**
+  String get genreAsian;
+
+  /// No description provided for @genreCafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cafe/Dessert'**
+  String get genreCafe;
+
   /// No description provided for @searching.
   ///
   /// In en, this message translates to:
@@ -345,6 +393,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access'**
   String get access;
+
+  /// No description provided for @detailCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get detailCall;
+
+  /// No description provided for @detailWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Details / Reserve'**
+  String get detailWeb;
+
+  /// No description provided for @averageBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Average budget'**
+  String get averageBudget;
+
+  /// No description provided for @launchPhoneFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the phone app.'**
+  String get launchPhoneFailed;
+
+  /// No description provided for @launchWebFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the shop page.'**
+  String get launchWebFailed;
 
   /// No description provided for @favoritesEmpty.
   ///
@@ -525,6 +603,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restaurant info: ホットペッパーグルメ Webサービス'**
   String get dataProviderValue;
+
+  /// No description provided for @developedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed by'**
+  String get developedBy;
 
   /// No description provided for @locationServiceDisabled.
   ///

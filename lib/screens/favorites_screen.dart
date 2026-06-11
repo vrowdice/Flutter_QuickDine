@@ -18,7 +18,6 @@ class FavoritesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.favorites),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ScreenWithCredit(
         child: ListenableBuilder(
@@ -31,7 +30,10 @@ class FavoritesScreen extends StatelessWidget {
                 child: Text(
                   l10n.favoritesEmpty,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               );
             }

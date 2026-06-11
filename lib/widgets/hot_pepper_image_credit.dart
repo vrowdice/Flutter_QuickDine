@@ -6,11 +6,14 @@ class HotPepperImageCredit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Text(
         '【画像提供：ホットペッパー グルメ】',
-        style: TextStyle(fontSize: 11, color: Colors.grey),
+        style: TextStyle(
+          fontSize: 11,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         textAlign: TextAlign.center,
       ),
     );

@@ -120,7 +120,10 @@ class QuickPinPanel extends StatelessWidget {
 
               '${l10n.longitude}: ${currentLng.toStringAsFixed(5)}',
 
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
 
             ),
 
@@ -234,7 +237,9 @@ class QuickPinPanel extends StatelessWidget {
 
           borderRadius: BorderRadius.circular(12),
 
-          border: Border.all(color: Colors.orange.withValues(alpha: 0.35)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.28),
+          ),
 
         ),
 
@@ -336,14 +341,10 @@ class QuickPinPanel extends StatelessWidget {
 
                         l10n.quickPinEmptyHint,
 
-                        style: const TextStyle(
-
+                        style: TextStyle(
                           fontSize: 11,
-
-                          color: Colors.grey,
-
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.4,
-
                         ),
 
                       ),

@@ -25,7 +25,7 @@ ALWAYS:
 
 ## QuickDine
 
-Flutter app that searches nearby restaurants in **Japan** via the HotPepper Gourmet API. Users pick a search origin on Google Maps, save **Quick Pins** for frequent locations, browse list/detail screens, and manage **favorites** locally. UI supports **Korean, Japanese, and English** (changeable in Settings).
+Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API. Full-screen **Google Maps** hub with radius/count/**genre** filters, bottom-sheet results, shop **detail** (call, web, budget), **Quick Pins**, and **favorites**. UI: **ko / ja / en**. Studio splash: **Vrowdice** logo.
 
 **Package ID:** `com.vrowdice.quick_dine`
 
@@ -33,32 +33,35 @@ Flutter app that searches nearby restaurants in **Japan** via the HotPepper Gour
 
 ### When changing code
 
-1. **Architecture & screen flow:** [agents/reference/architecture.md](agents/reference/architecture.md)
-2. **HotPepper API & credit compliance:** [agents/reference/api.md](agents/reference/api.md) — credit attribution is mandatory on API data/image screens
-3. **Google Maps & location:** [agents/reference/maps.md](agents/reference/maps.md) — Maps key single source: `assets/env`
-4. **Localization (ko / ja / en):** [agents/reference/localization.md](agents/reference/localization.md)
-5. **Environment & run:** [agents/setup/dev-environment.md](agents/setup/dev-environment.md)
+1. [agents/reference/architecture.md](agents/reference/architecture.md) — flow, search panel, splash, theme
+2. [agents/reference/api.md](agents/reference/api.md) — HotPepper params, `Shop` fields, credits; **no open-now filter**
+3. [agents/reference/maps.md](agents/reference/maps.md) — map padding, markers
+4. [agents/reference/localization.md](agents/reference/localization.md)
+5. [agents/setup/dev-environment.md](agents/setup/dev-environment.md)
 
 ### Layer map (`lib/`)
 
 | Layer | Path | Role |
 |-------|------|------|
-| Entry | `main.dart`, `app.dart` | Load env, init services, `MaterialApp` + locale |
-| Screens | `screens/` | Search → List → Detail; Favorites; Settings |
-| Widgets | `widgets/` | Map, Quick Pin panel, credits, favorites, detail UI |
-| Services | `services/` | HotPepper API, GPS, favorites, quick pins, settings, Maps key |
-| Models | `models/` | `Shop`, `QuickPin` |
-| Constants | `constants/` | API URLs, env key names, default coords, pin colors |
-| l10n | `l10n/` | `app_*.arb` → generated `AppLocalizations` |
-| Utils | `utils/` | l10n helpers (location errors, language labels) |
+| Entry | `main.dart`, `app.dart` | `runApp`; `MaterialApp` + theme |
+| Bootstrap | `services/app_bootstrap.dart`, `screens/splash_screen.dart` | Init + splash → `SearchScreen` |
+| Theme | `theme/app_theme.dart` | `AppColors`, Noto fonts, primary AppBar |
+| Screens | `screens/` | Splash, Search (map hub), Detail, Favorites, Settings |
+| Widgets | `widgets/` | Search panel, map, credits, `ShopDetailActions`, `StudioCredit` |
+| Services | `services/` | HotPepper API (`genre` optional), GPS, prefs, Maps key |
+| Models | `models/` | `Shop` (phone, url, budget, genre, catch), `QuickPin` |
+| Constants | `constants/` | API, radius, count, **genre codes**, `app_assets` |
+| Utils | `utils/` | l10n helpers, `url_launcher_helpers` |
+| l10n | `l10n/` | `app_*.arb` |
 
 ### Hard constraints
 
-- **Japan-only data:** HotPepper only accepts Japanese coordinates. Default map center is Tokyo Station; users outside Japan rely on map tap or saved Quick Pins.
-- **Credit requirement:** Screens showing API data or images must keep `ScreenWithCredit` and `HotPepperImageCredit`. Official HotPepper credit copy stays **Japanese in all locales**.
-- **Secrets:** `assets/env` is `.gitignore`d. Template: `assets/env.example`. Never put real key values in commits, logs, or docs.
-- **UI strings:** User-facing copy goes in `lib/l10n/app_*.arb` — not hardcoded in widgets. Use `AppLocalizations.of(context)!`.
-- **Local data:** Favorites and Quick Pins use `shared_preferences`; Settings stores default radius and locale.
+- **Japan-only coordinates** for HotPepper; default Tokyo Station.
+- **HotPepper credits** mandatory on API screens; Japanese credit copy in all locales.
+- **No open-now filter** — API unsupported; use `parking` / `private_room` etc. if adding filters.
+- **Secrets:** `assets/env` gitignored; template `assets/env.example`.
+- **UI strings** in ARB only (except API-returned shop text).
+- **Vrowdice branding** only in splash + Settings `StudioCredit` — not on HotPepper credit UI.
 
 ### Verify changes
 

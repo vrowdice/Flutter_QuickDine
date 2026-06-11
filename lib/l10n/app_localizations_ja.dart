@@ -51,6 +51,30 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchPill => '検索する';
 
   @override
+  String get genreAll => 'すべて';
+
+  @override
+  String get genreIzakaya => '居酒屋';
+
+  @override
+  String get genreJapanese => '和食';
+
+  @override
+  String get genreItalianFrench => 'イタリアン・フレンチ';
+
+  @override
+  String get genreChinese => '中華';
+
+  @override
+  String get genreYakiniku => '焼肉';
+
+  @override
+  String get genreAsian => 'アジア・エスニック';
+
+  @override
+  String get genreCafe => 'カフェ・スイーツ';
+
+  @override
   String get searching => '検索中...';
 
   @override
@@ -146,6 +170,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get access => 'アクセス';
 
   @override
+  String get detailCall => '電話する';
+
+  @override
+  String get detailWeb => '詳細/予約';
+
+  @override
+  String get averageBudget => '平均予算';
+
+  @override
+  String get launchPhoneFailed => '電話アプリを開けませんでした。';
+
+  @override
+  String get launchWebFailed => '店舗ページを開けませんでした。';
+
+  @override
   String get favoritesEmpty => 'お気に入りの店舗がありません。\n検索結果や詳細画面で ♥ を押して追加してください。';
 
   @override
@@ -235,6 +274,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dataProviderValue => '店舗情報: ホットペッパーグルメ Webサービス';
+
+  @override
+  String get developedBy => 'Developed by';
 
   @override
   String get locationServiceDisabled => '位置情報サービスがオフです。設定でGPSをオンにしてください。';

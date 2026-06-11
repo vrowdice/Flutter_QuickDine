@@ -51,6 +51,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchPill => '검색하기';
 
   @override
+  String get genreAll => '전체';
+
+  @override
+  String get genreIzakaya => '이자카야';
+
+  @override
+  String get genreJapanese => '일식';
+
+  @override
+  String get genreItalianFrench => '이탈리안/프렌치';
+
+  @override
+  String get genreChinese => '중식';
+
+  @override
+  String get genreYakiniku => '야키니쿠';
+
+  @override
+  String get genreAsian => '아시아/에스닉';
+
+  @override
+  String get genreCafe => '카페/디저트';
+
+  @override
   String get searching => '검색 중...';
 
   @override
@@ -146,6 +170,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get access => '접근';
 
   @override
+  String get detailCall => '전화걸기';
+
+  @override
+  String get detailWeb => '상세/예약';
+
+  @override
+  String get averageBudget => '평균 예산';
+
+  @override
+  String get launchPhoneFailed => '전화 앱을 열 수 없습니다.';
+
+  @override
+  String get launchWebFailed => '점포 페이지를 열 수 없습니다.';
+
+  @override
   String get favoritesEmpty => '즐겨찾기한 식당이 없습니다.\n검색 결과나 상세 화면에서 ♥ 를 눌러 추가하세요.';
 
   @override
@@ -235,6 +274,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dataProviderValue => '레스토랑 정보: ホットペッパーグルメ Webサービス';
+
+  @override
+  String get developedBy => 'Developed by';
 
   @override
   String get locationServiceDisabled => '위치 서비스가 꺼져 있습니다. 설정에서 GPS를 켜 주세요.';

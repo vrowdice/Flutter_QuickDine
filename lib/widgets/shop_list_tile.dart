@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/shop.dart';
+import 'app_logo.dart';
 import 'favorite_icon_button.dart';
-import 'hot_pepper_image_credit.dart';
 
 /// 검색 결과·즐겨찾기 공통 식당 목록 타일
 class ShopListTile extends StatelessWidget {
@@ -17,6 +17,8 @@ class ShopListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ListTile(
       leading: shop.logoImage.isNotEmpty
           ? ClipRRect(
@@ -27,10 +29,10 @@ class ShopListTile extends StatelessWidget {
                 height: 56,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) =>
-                    const Icon(Icons.restaurant, size: 40),
+                    const AppLogo(size: 56, borderRadius: 4),
               ),
             )
-          : const Icon(Icons.restaurant, size: 40),
+          : const AppLogo(size: 56, borderRadius: 4),
       title: Text(
         shop.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -38,8 +40,23 @@ class ShopListTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(shop.access),
-          if (shop.logoImage.isNotEmpty) const HotPepperImageCredit(),
+          if (shop.genreName.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text(
+                shop.genreName,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.secondary,
+                ),
+              ),
+            ),
+          Text(
+            shop.access,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
       trailing: Row(

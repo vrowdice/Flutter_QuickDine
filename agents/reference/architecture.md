@@ -4,19 +4,17 @@
 
 ```mermaid
 flowchart TB
-  main["main.dart\nenv + init services"] --> app["app.dart\nQuickDineApp + locale"]
-  app --> search["SearchScreen\n(map hub)"]
+  main["main.dart\nrunApp"] --> app["app.dart\nQuickDineApp"]
+  app --> splash["SplashScreen\nbootstrap + logo"]
+  splash --> search["SearchScreen\n(map hub)"]
   search -->|"marker / list tap"| detail["DetailScreen"]
   search --> favorites["FavoritesScreen"]
   search --> settings["SettingsScreen"]
   favorites --> detail
   detail -->|"showOnMap (pop Shop)"| search
   favorites -->|"showOnMap (pop Shop)"| search
-  search --> quickPin["QuickPinPanel\n(overlay)"]
-  quickPin --> pinSvc["QuickPinService"]
-  search -->|"FavoriteIconButton"| favSvc["FavoritesService"]
-  detail -->|"FavoriteIconButton"| favSvc
-  settings --> setSvc["SettingsService\nradius + max count + locale"]
+  splash --> boot["AppBootstrap\nenv + services"]
+  settings --> setSvc["SettingsService"]
   setSvc --> app
 ```
 
@@ -24,111 +22,90 @@ flowchart TB
 
 | Screen | Role |
 |--------|------|
-| **SearchScreen** | Hub: full-screen map, AppBar (title + ♥ + settings), floating radius/count card, bottom **Search pill**, `DraggableScrollableSheet` result list, orange map markers, Quick Pin overlay, GPS on startup |
-| **DetailScreen** | Photo, address, hours, access (segmented UI); ♥ toggle; **Show on map** if `shop.hasLocation` |
-| **FavoritesScreen** | Saved shops list; tap → detail; forwards show-on-map `Shop` to SearchScreen |
-| **SettingsScreen** | Default search radius, default max count, language, clear favorites/pins |
+| **SplashScreen** | Primary background + white Vrowdice logo; runs `AppBootstrap`; min ~1.2s then `SearchScreen` |
+| **SearchScreen** | Hub: map, AppBar (QuickDine `AppLogo` + ♥ + settings), **unified search panel** (radius, count, genre chips), search pill, bottom sheet, Quick Pins |
+| **DetailScreen** | Photo, name, `[genre] catch` subtitle, call/web actions, budget/address/hours/access cards; show-on-map; ♥ |
+| **FavoritesScreen** | Saved shops; tap → detail |
+| **SettingsScreen** | Defaults, language, clear data; app info block + `StudioCredit` |
 
-There is **no dedicated list screen**. Results appear as **orange map markers** and in the **bottom sheet list** (`ShopListTile`: name, access, thumbnail).
+No dedicated list screen — results are map markers + `SearchResultsSheet`.
 
-Navigation: `Navigator.push` + `MaterialPageRoute`. `SearchScreen` is `MaterialApp` home.
+Navigation: `Navigator.push` + `MaterialPageRoute`. Initial route: `SplashScreen` → replaces with `SearchScreen`.
 
 ## SearchScreen layout (Stack in body)
 
-Body uses `LayoutBuilder` — **extent math must use `constraints.maxHeight`**, not full screen height (AppBar excluded).
+Use `LayoutBuilder` — **extent math uses `constraints.maxHeight`** (body only, AppBar excluded).
 
 | Layer (bottom → top) | Widget |
 |----------------------|--------|
-| Map | `SearchMapStack` → `MapLocationPicker` |
-| Bottom sheet | `SearchResultsSheet` (when `_isSheetVisible` && results) |
-| Credit bar | `HotPepperCreditBar` (only when sheet hidden) |
-| Floating filters | `SearchFloatingControls` (radius + max count) |
-| Search CTA | `SearchPillButton` (bottom-center; Y tracks sheet via `_sheetExtent`) |
+| Map | `SearchMapStack` |
+| Bottom sheet | `SearchResultsSheet` (conditional) |
+| Credit bar | `HotPepperCreditBar` (sheet hidden only) |
+| Search panel | `SearchFloatingControls` (dropdowns + horizontal genre chips) |
+| Search CTA | `SearchPillButton` (tracks `_sheetExtent`) |
 
-**State flags:** `_isLoading`, `_isQuickPinPanelOpen`, `_isSheetVisible`, `_sheetExtent`, `_searchResults`.
+**State:** `_isLoading`, `_isQuickPinPanelOpen`, `_isSheetVisible`, `_sheetExtent`, `_searchResults`, `_selectedRadius`, `_selectedMaxCount`, `_selectedGenreCode` (null = all genres).
 
-## Startup sequence (`main.dart`)
+Genre change clears results (re-search required). Pill reopens sheet without re-fetch if results exist.
 
-1. `dotenv.load(assets/env)`
-2. `MapsKeyService.initialize()`
-3. `FavoritesService.instance.init()`
-4. `QuickPinService.instance.init()`
-5. `SettingsService.instance.init()`
-6. `runApp(QuickDineApp())`
+## Startup sequence
 
-On first frame, `SearchScreen._applyCurrentLocation(showFeedback: false)`.
+1. `main()` — `WidgetsFlutterBinding.ensureInitialized()` → `runApp(QuickDineApp())`
+2. `SplashScreen` — parallel: `AppBootstrap.ensureInitialized()` + min display delay
+3. `AppBootstrap` — `dotenv`, `MapsKeyService`, favorites, quick pins, settings
+4. Navigate to `SearchScreen` → silent GPS via `_applyCurrentLocation`
 
-## Layer conventions
+Native Android/iOS launch splash uses primary color (+ white logo on Android) for seamless handoff.
 
-### Widgets (`widgets/`)
+## Theme (`theme/app_theme.dart`)
+
+- **Primary** `#C4683A` (terracotta) — AppBar, search pill, selected genre chip
+- **Secondary** `#3D6B5C` (sage) — icons, detail accents, input focus
+- Noto Sans / KR / JP via `google_fonts`
+- `MaterialApp.debugShowCheckedModeBanner: false`
+
+## Key widgets
 
 | Widget | Role |
 |--------|------|
-| `SearchMapStack` | Map + Quick Pin panel + bouncy Quick Pin button + my-location |
-| `MapLocationPicker` | Markers, search radius circle, camera, padding |
-| `SearchFloatingControls` | Top card: `SearchRadiusDropdown` + `SearchCountDropdown` |
-| `SearchPillButton` | Bottom pill: primary CTA (`searchPill` l10n) |
-| `SearchResultsSheet` | Draggable list; close animates to 0 then unmounts |
-| `SearchCountDropdown` / `SearchRadiusDropdown` | Shared by Search + Settings |
-| `DetailSection` (`detail_row.dart`) | Multi-segment values in bullet boxes |
-| `ShopListTile` | Thumbnail + name + access (+ image credit) |
+| `SearchFloatingControls` | Single card: radius + count row, genre `ChoiceChip` row (StadiumBorder) |
+| `SearchPillButton` | Primary CTA |
+| `SearchResultsSheet` | Draggable list; snap 0 / 0.3 / 0.8 |
+| `ShopDetailActions` | `tel:` + HotPepper web URL (`url_launcher`) |
+| `DetailSection` | Bullet-box info blocks |
+| `AppLogo` | QuickDine `assets/images/app_icon.png` |
+| `StudioCredit` | Settings footer — Developed by Vrowdice (black logo) |
 
-### Services (`services/`)
+## Services
 
-| Service | Responsibility |
-|---------|----------------|
-| `HotPepperApi` | REST → `List<Shop>`; user `range` + `count` |
-| `LocationService` | Geolocator; `LocationException` |
-| `FavoritesService` | `ChangeNotifier`; `favorite_shops` pref |
-| `QuickPinService` | `ChangeNotifier`; `quick_pins` pref |
-| `SettingsService` | `defaultMaxSearchCount`, `defaultSearchRadius`, `locale` |
-| `MapsKeyService` | iOS Maps key via MethodChannel |
+| Service | Role |
+|---------|------|
+| `HotPepperApi` | `searchShops(lat, lng, count, range, genre?)` |
+| `AppBootstrap` | One-shot init from splash |
+| `SettingsService` | `search_range`, `search_max_count`, `app_locale` |
+| Others | GPS, favorites, quick pins, Maps key |
 
-### Constants (`constants/`)
+## Local persistence
 
-- `search_radius.dart` — range 1~5, `clampSearchRadius()`, `searchRadiusMeters()`
-- `search_count.dart` — `[10,20,30,50,100]`, `clampSearchCount()`
-- `ApiConstants` — URLs, env keys, Tokyo default, `maxResultCount` (100)
+| Key | Content |
+|-----|---------|
+| `favorite_shops` | JSON `Shop` (all model fields in `toJson`) |
+| `quick_pins` | JSON `QuickPin` |
+| `search_max_count` | 10–100 |
+| `search_range` | 1–5 |
+| `app_locale` | ko / ja / en (optional) |
 
-### Detail text splitting (`detail_row.dart`)
+## Show on map
 
-- Default: `,` / `、`
-- Access field: also `/` / `／` (`accessSplitPattern`)
-- Single or multiple segments: same bullet-box style
+`DetailScreen` / `FavoritesScreen` → `Navigator.pop(context, shop)` → `_showShopOnMap`. Updates center coords; **does not** call `moveTo()` (preserves results).
 
-## Local persistence (`shared_preferences`)
+## Credits
 
-| Key | Service | Content |
-|-----|---------|---------|
-| `favorite_shops` | FavoritesService | JSON `Shop` list |
-| `quick_pins` | QuickPinService | JSON `QuickPin` list |
-| `search_max_count` | SettingsService | 10 / 20 / 30 / 50 / 100 |
-| `search_range` | SettingsService | 1~5 (300m~3000m) |
-| `app_locale` | SettingsService | `ko` / `ja` / `en` (absent = system) |
+- **SearchScreen:** sheet footer or bottom bar — not `ScreenWithCredit`
+- **Detail / Favorites / Settings:** `ScreenWithCredit` + `HotPepperImageCredit` on images
+- HotPepper Japanese credit text mandatory in all locales
+- Vrowdice `StudioCredit` is separate from HotPepper compliance (Settings only)
 
-## Show on map flow
+## Dependencies
 
-1. `DetailScreen` AppBar map icon → `Navigator.pop(context, shop)`
-2. `SearchScreen._showShopOnMap(shop)`:
-   - Updates `_searchLat` / `_searchLng` (search center moves)
-   - Keeps/adds shop in `_searchResults`
-   - **Does not** call `moveTo()` (would clear results via `onLocationChanged`)
-
-## Search / bottom sheet interaction
-
-- Search pill tap → API call → `_isSheetVisible = true`, sheet at `initialChildSize` (0.3)
-- Sheet dismissed (X or swipe to 0) → `_isSheetVisible = false`; pill reappears at bottom
-- Pill tap when results exist but sheet hidden → reopens sheet without re-fetch
-- `_sheetExtent` from `SearchResultsSheet.onExtentChanged` — pill `bottom` = `extent × stackHeight + margin`
-
-## Credit on SearchScreen
-
-SearchScreen **does not** use `ScreenWithCredit`. Credits:
-- Sheet hidden: `HotPepperCreditBar` at screen bottom
-- Sheet open: credit in list footer inside `SearchResultsSheet`
-
-Other API screens (Detail, Favorites, Settings) use `ScreenWithCredit`.
-
-## Dependencies (pubspec)
-
-`http`, `geolocator`, `flutter_dotenv`, `google_maps_flutter`, `url_launcher`, `shared_preferences`, `flutter_localizations`, `intl`.
+`http`, `geolocator`, `flutter_dotenv`, `google_maps_flutter`, `url_launcher`, `shared_preferences`, `flutter_localizations`, `intl`, `google_fonts`.

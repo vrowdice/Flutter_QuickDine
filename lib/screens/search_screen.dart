@@ -11,6 +11,7 @@ import '../services/hotpepper_api.dart';
 import '../services/location_service.dart';
 import '../services/settings_service.dart';
 import '../utils/l10n_helpers.dart';
+import '../widgets/app_logo.dart';
 import '../widgets/hot_pepper_credit_bar.dart';
 import '../widgets/map_location_picker.dart';
 import '../widgets/search_floating_controls.dart';
@@ -41,6 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isSheetVisible = false;
   double _sheetExtent = SearchResultsSheet.initialChildSize;
   String? _selectedPinId;
+  String? _selectedGenreCode;
 
   double _searchLat = ApiConstants.defaultMapLat;
   double _searchLng = ApiConstants.defaultMapLng;
@@ -96,6 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
         lng: _searchLng,
         count: _selectedMaxCount,
         range: _selectedRadius,
+        genre: _selectedGenreCode,
       );
 
       if (!mounted) return;
@@ -235,8 +238,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Center(child: AppLogo(size: 26)),
+        ),
+        leadingWidth: 44,
         title: Text(l10n.searchTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             onPressed: _openFavorites,
@@ -317,6 +324,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: SearchFloatingControls(
                   selectedRadius: _selectedRadius,
                   selectedMaxCount: _selectedMaxCount,
+                  selectedGenreCode: _selectedGenreCode,
                   isLoading: _isLoading,
                   onRadiusChanged: _isLoading
                       ? null
@@ -328,6 +336,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       : (count) => setState(
                             () => _selectedMaxCount = clampSearchCount(count),
                           ),
+                  onGenreChanged: _isLoading
+                      ? null
+                      : (code) => setState(() {
+                            _selectedGenreCode = code;
+                            _clearSearchResults();
+                          }),
                 ),
               ),
               if (!_isQuickPinPanelOpen)

@@ -15,6 +15,27 @@ String locationErrorMessage(AppLocalizations l10n, Object error) {
   return error.toString();
 }
 
+String genreLabel(AppLocalizations l10n, String? code) {
+  switch (code) {
+    case 'G001':
+      return l10n.genreIzakaya;
+    case 'G004':
+      return l10n.genreJapanese;
+    case 'G006':
+      return l10n.genreItalianFrench;
+    case 'G007':
+      return l10n.genreChinese;
+    case 'G008':
+      return l10n.genreYakiniku;
+    case 'G009':
+      return l10n.genreAsian;
+    case 'G014':
+      return l10n.genreCafe;
+    default:
+      return l10n.genreAll;
+  }
+}
+
 String languageLabel(AppLocalizations l10n, String code) {
   switch (code) {
     case 'ko':

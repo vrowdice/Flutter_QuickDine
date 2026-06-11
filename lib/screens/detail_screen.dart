@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/shop.dart';
+import '../widgets/app_logo.dart';
 import '../widgets/detail_row.dart';
 import '../widgets/favorite_icon_button.dart';
 import '../widgets/hot_pepper_image_credit.dart';
 import '../widgets/screen_with_credit.dart';
+import '../widgets/shop_detail_actions.dart';
 
 /// 화면 3: 점포 상세 화면 (Detail Screen)
 class DetailScreen extends StatelessWidget {
@@ -20,7 +22,6 @@ class DetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.shopDetail),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           if (shop.hasLocation)
             IconButton(
@@ -44,7 +45,7 @@ class DetailScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 220,
-                    color: Colors.grey[300],
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     child: const Icon(Icons.broken_image, size: 64),
                   ),
                 ),
@@ -52,8 +53,8 @@ class DetailScreen extends StatelessWidget {
               ] else
                 Container(
                   height: 220,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.restaurant, size: 64),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: const Center(child: AppLogo(size: 80, borderRadius: 20)),
                 ),
 
               Padding(
@@ -67,7 +68,31 @@ class DetailScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 20),
+                    if (shop.hasSubtitle) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        shop.shopSubtitle!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.45,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    ShopDetailActions(shop: shop),
+                    if (shop.hasPhone || shop.hasShopUrl) const SizedBox(height: 20),
+
+                    if (shop.hasBudget) ...[
+                      DetailSection(
+                        icon: Icons.payments_outlined,
+                        label: l10n.averageBudget,
+                        value: shop.budget,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
 
                     DetailSection(
                       icon: Icons.location_on,

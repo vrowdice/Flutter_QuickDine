@@ -16,77 +16,90 @@ Documents agents should read before changing code or configuration.
 
 ```
 lib/
-  main.dart                    # dotenv → MapsKeyService → local services → QuickDineApp
-  app.dart                     # MaterialApp, theme, locale, l10n delegates
+  main.dart                    # WidgetsFlutterBinding → runApp(QuickDineApp)
+  app.dart                     # MaterialApp, theme, locale; home: SplashScreen
+  theme/
+    app_theme.dart             # AppColors, primary/secondary, Noto fonts, AppBar primary
   constants/
-    api_constants.dart         # URLs, env names, default Tokyo coords, maxResultCount
-    search_count.dart          # max result options [10,20,30,50,100], default 20
-    search_radius.dart         # HotPepper range 1~5 (300m~3000m)
-    quick_pin_colors.dart      # Pin list/marker colors
+    api_constants.dart
+    app_assets.dart            # app_icon, Vrowdice logos
+    search_count.dart
+    search_radius.dart
+    search_genre.dart          # genre codes G001~G014
+    quick_pin_colors.dart
   models/
-    shop.dart                  # HotPepper JSON + lat/lng + favorites serialization
-    quick_pin.dart             # Saved map location
+    shop.dart                  # full HotPepper fields + favorites JSON
+    quick_pin.dart
   services/
-    hotpepper_api.dart
-    location_service.dart      # GPS + LocationException codes
-    favorites_service.dart     # shared_preferences
+    app_bootstrap.dart         # env + services init (called from SplashScreen)
+    hotpepper_api.dart         # lat/lng/range/count/genre search
+    location_service.dart
+    favorites_service.dart
     quick_pin_service.dart
-    settings_service.dart      # default max count, default radius, locale
-    maps_key_service.dart      # iOS MethodChannel key injection
+    settings_service.dart
+    maps_key_service.dart
   screens/
-    search_screen.dart         # map hub: AppBar, floating filters, pill search, bottom sheet
-    detail_screen.dart         # photo, address, hours, access, show-on-map, favorite
+    splash_screen.dart         # Vrowdice logo splash → SearchScreen
+    search_screen.dart         # map hub
+    detail_screen.dart         # photo, subtitle, actions, info cards
     favorites_screen.dart
-    settings_screen.dart       # default radius, max count, language, clear data
+    settings_screen.dart       # app info + StudioCredit footer
   widgets/
-    map_location_picker.dart   # Google Map, radius circle, search/shop/quick-pin markers
-    search_map_stack.dart      # map + quick pin overlay + my-location (bounce on quick pin)
-    search_floating_controls.dart  # top floating card: radius + max count
-    search_pill_button.dart    # bottom-center pill CTA search button
-    search_results_sheet.dart  # DraggableScrollableSheet result list
+    search_floating_controls.dart  # unified search panel: dropdowns + genre chips
+    search_map_stack.dart
+    map_location_picker.dart
+    search_pill_button.dart
+    search_results_sheet.dart
+    shop_list_tile.dart
+    shop_detail_actions.dart   # call + web OutlinedButtons
+    app_logo.dart              # QuickDine app icon in UI
+    studio_credit.dart         # Developed by Vrowdice (Settings)
+    detail_row.dart
+    quick_pin_panel.dart
     search_count_dropdown.dart
     search_radius_dropdown.dart
-    quick_pin_panel.dart
-    shop_list_tile.dart        # list row: name, access, thumbnail
     favorite_icon_button.dart
-    detail_row.dart            # DetailSection (comma/、/slash split)
     screen_with_credit.dart
     hot_pepper_credit_bar.dart
     hot_pepper_image_credit.dart
+  utils/
+    l10n_helpers.dart          # locationError, languageLabel, genreLabel
+    url_launcher_helpers.dart  # tel: + external browser
+    confirm_dialog.dart
   l10n/
     app_en.arb, app_ko.arb, app_ja.arb
-    app_localizations.dart     # generated — do not edit by hand
-  utils/
-    l10n_helpers.dart
-    confirm_dialog.dart
 assets/
-  env                          # gitignored — API keys (local only)
-  env.example                  # template for setup
-android/app/
-  build.gradle.kts             # reads assets/env → manifestPlaceholders
-  src/main/AndroidManifest.xml # ${GOOGLE_MAPS_API_KEY} placeholder
-ios/Runner/
-  AppDelegate.swift            # MethodChannel quick_dine/maps_key
-l10n.yaml                      # flutter gen-l10n config
+  env                          # gitignored
+  env.example
+  images/
+    app_icon.png               # launcher + in-app QuickDine logo
+    VrowdiceLogoSimpleBlack.png
+    VrowdiceLogoSimpleWhite.png
+android/app/src/main/res/
+  mipmap-*/ic_launcher.png     # from lib/AppIcons (source)
+  drawable/splash_logo.png     # native launch splash (white logo)
+  values/colors.xml            # splash_primary
+ios/Runner/Assets.xcassets/AppIcon.appiconset/
+l10n.yaml
 ```
 
 ## Task routing
 
 | User intent | Read first | Typical touch points |
 |-------------|------------|----------------------|
-| Search, radius, max count, API | architecture, api | `search_screen.dart`, `hotpepper_api.dart`, `search_radius.dart`, `search_count.dart`, `settings_service.dart` |
-| Bottom sheet / result list | architecture, maps | `search_results_sheet.dart`, `shop_list_tile.dart`, `search_screen.dart` |
-| Search pill / floating filters | architecture | `search_pill_button.dart`, `search_floating_controls.dart` |
-| Map markers, radius circle, show-on-map | maps, architecture | `map_location_picker.dart`, `search_map_stack.dart` |
-| Detail UI / access parsing | architecture, api | `detail_screen.dart`, `detail_row.dart` |
-| Map, GPS, Quick Pins | maps | `quick_pin_panel.dart`, `search_map_stack.dart`, `quick_pin_service.dart` |
-| Favorites | architecture, api | `favorites_service.dart`, `favorites_screen.dart`, `shop.dart` |
-| Settings, language | architecture, localization | `settings_screen.dart`, `settings_service.dart`, `app.dart`, `app_*.arb` |
-| API keys, env, build | setup, maps | `assets/env`, `build.gradle.kts`, `AppDelegate.swift` |
-| Add UI string / translate | localization | `app_en.arb`, `app_ko.arb`, `app_ja.arb` |
-| Add Shop fields | api, architecture | `shop.dart`, `hotpepper_api.dart`, list/detail UI, favorites `toJson` |
+| Search, radius, count, genre, API | architecture, api | `search_screen.dart`, `hotpepper_api.dart`, `search_floating_controls.dart`, `search_genre.dart` |
+| Bottom sheet / result list | architecture, maps | `search_results_sheet.dart`, `shop_list_tile.dart` |
+| Detail actions / Shop fields | api, architecture | `shop.dart`, `detail_screen.dart`, `shop_detail_actions.dart` |
+| Theme / colors | architecture | `app_theme.dart` |
+| Splash / bootstrap / studio branding | architecture | `splash_screen.dart`, `app_bootstrap.dart`, `studio_credit.dart` |
+| Map, GPS, Quick Pins | maps | `search_map_stack.dart`, `map_location_picker.dart` |
+| Favorites | api | `favorites_service.dart`, `shop.dart` `toJson` |
+| Settings, language | localization | `settings_screen.dart`, `settings_service.dart` |
+| Add UI string | localization | `app_*.arb` |
+| API keys, build | setup | `assets/env`, Android/iOS native config |
 
 ## Out of scope (unless asked)
 
-- `build/`, `.dart_tool/`, `lib/l10n/app_localizations_*.dart` (generated) — do not hand-edit generated l10n output
-- Platform boilerplate (`windows/`, `linux/`, `macos/`, `web/`) — minimize unrelated changes
+- `lib/AppIcons/` — icon source pack; deployed copies live under `android/`, `ios/`, `assets/images/`
+- `build/`, `.dart_tool/`, generated `app_localizations_*.dart`
+- **Open-now filter** — HotPepper API does not support; do not parse `open` text (see [api.md](reference/api.md))

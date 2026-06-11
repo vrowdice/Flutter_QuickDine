@@ -6,7 +6,9 @@ import '../services/quick_pin_service.dart';
 import '../services/settings_service.dart';
 import '../utils/confirm_dialog.dart';
 import '../utils/l10n_helpers.dart';
+import '../widgets/app_logo.dart';
 import '../widgets/screen_with_credit.dart';
+import '../widgets/studio_credit.dart';
 import '../widgets/search_count_dropdown.dart';
 import '../widgets/search_radius_dropdown.dart';
 
@@ -54,7 +56,6 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settingsTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ScreenWithCredit(
         child: ListView(
@@ -80,7 +81,10 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               l10n.defaultSearchRadiusHint,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             ListenableBuilder(
@@ -101,7 +105,10 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               l10n.defaultMaxSearchCountHint,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
             Text(l10n.sectionLanguage, style: sectionTitleStyle),
@@ -157,19 +164,38 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(l10n.sectionAppInfo, style: sectionTitleStyle),
-            const SizedBox(height: 8),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.restaurant),
-              title: Text(l10n.appTitle),
-              subtitle: Text(l10n.appDescription),
+            const SizedBox(height: 12),
+            Center(
+              child: Column(
+                children: [
+                  const AppLogo(size: 72, borderRadius: 16),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.appTitle,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.appDescription,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.info_outline),
               title: Text(l10n.dataProvider),
               subtitle: Text(l10n.dataProviderValue),
             ),
+            const StudioCredit(),
           ],
         ),
       ),

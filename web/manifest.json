@@ -1,11 +1,11 @@
 {
-    "name": "quick_dine",
-    "short_name": "quick_dine",
+    "name": "QuickDine",
+    "short_name": "QuickDine",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FBF9F7",
+    "theme_color": "#C4683A",
+    "description": "Nearby restaurant search in Japan using HotPepper API.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
