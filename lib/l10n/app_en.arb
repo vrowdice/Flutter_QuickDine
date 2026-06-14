@@ -86,6 +86,8 @@
   "businessHours": "Hours",
   "access": "Access",
   "detailCall": "Call",
+  "filterParking": "Parking",
+  "filterPrivateRoom": "Private room",
   "detailWeb": "Details / Reserve",
   "averageBudget": "Average budget",
   "launchPhoneFailed": "Could not open the phone app.",

@@ -50,6 +50,8 @@
   "businessHours": "営業時間",
   "access": "アクセス",
   "detailCall": "電話する",
+  "filterParking": "駐車場",
+  "filterPrivateRoom": "個室",
   "detailWeb": "詳細/予約",
   "averageBudget": "平均予算",
   "launchPhoneFailed": "電話アプリを開けませんでした。",

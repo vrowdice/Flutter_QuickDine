@@ -173,6 +173,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailCall => '전화걸기';
 
   @override
+  String get filterParking => '주차장';
+
+  @override
+  String get filterPrivateRoom => '개별실';
+
+  @override
   String get detailWeb => '상세/예약';
 
   @override

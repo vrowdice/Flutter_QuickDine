@@ -176,6 +176,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailCall => 'Call';
 
   @override
+  String get filterParking => 'Parking';
+
+  @override
+  String get filterPrivateRoom => 'Private room';
+
+  @override
   String get detailWeb => 'Details / Reserve';
 
   @override

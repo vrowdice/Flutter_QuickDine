@@ -173,6 +173,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailCall => '電話する';
 
   @override
+  String get filterParking => '駐車場';
+
+  @override
+  String get filterPrivateRoom => '個室';
+
+  @override
   String get detailWeb => '詳細/予約';
 
   @override

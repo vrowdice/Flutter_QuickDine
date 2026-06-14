@@ -400,6 +400,18 @@ abstract class AppLocalizations {
   /// **'Call'**
   String get detailCall;
 
+  /// No description provided for @filterParking.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking'**
+  String get filterParking;
+
+  /// No description provided for @filterPrivateRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Private room'**
+  String get filterPrivateRoom;
+
   /// No description provided for @detailWeb.
   ///
   /// In en, this message translates to:

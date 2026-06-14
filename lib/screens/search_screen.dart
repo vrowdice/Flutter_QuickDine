@@ -43,6 +43,8 @@ class _SearchScreenState extends State<SearchScreen> {
   double _sheetExtent = SearchResultsSheet.initialChildSize;
   String? _selectedPinId;
   String? _selectedGenreCode;
+  bool _filterParking = false;
+  bool _filterPrivateRoom = false;
 
   double _searchLat = ApiConstants.defaultMapLat;
   double _searchLng = ApiConstants.defaultMapLng;
@@ -99,6 +101,8 @@ class _SearchScreenState extends State<SearchScreen> {
         count: _selectedMaxCount,
         range: _selectedRadius,
         genre: _selectedGenreCode,
+        parking: _filterParking,
+        privateRoom: _filterPrivateRoom,
       );
 
       if (!mounted) return;
@@ -325,6 +329,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   selectedRadius: _selectedRadius,
                   selectedMaxCount: _selectedMaxCount,
                   selectedGenreCode: _selectedGenreCode,
+                  filterParking: _filterParking,
+                  filterPrivateRoom: _filterPrivateRoom,
                   isLoading: _isLoading,
                   onRadiusChanged: _isLoading
                       ? null
@@ -340,6 +346,18 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? null
                       : (code) => setState(() {
                             _selectedGenreCode = code;
+                            _clearSearchResults();
+                          }),
+                  onFilterParkingChanged: _isLoading
+                      ? null
+                      : (value) => setState(() {
+                            _filterParking = value;
+                            _clearSearchResults();
+                          }),
+                  onFilterPrivateRoomChanged: _isLoading
+                      ? null
+                      : (value) => setState(() {
+                            _filterPrivateRoom = value;
                             _clearSearchResults();
                           }),
                 ),
