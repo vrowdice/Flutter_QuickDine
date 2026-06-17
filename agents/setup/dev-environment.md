@@ -56,16 +56,18 @@ PowerShell: chain with `;`.
 |---------|-------|
 | Missing API key errors | `assets/env` from `env.example` |
 | Blank map | Maps key, billing, SHA-1 (release) |
-| Zero results | Japan coords; widen radius/count; try genre “All” |
+| Zero results | Japan coords; widen radius/count; try genre “All”; disable parking/private-room if too strict |
+| Search timeout | Network; API key; 15s limit in `hotpepper_api.dart` |
 | Phone link fails (Android) | `tel:` in manifest `<queries>` |
 | Genre filter API error | Codes must match `search_genre.dart` exactly |
 
 ## Agent verification checklist
 
 1. `flutter analyze lib` — zero errors
-2. Splash → search panel (radius, count, genre chips) → pill search → sheet + markers → detail (subtitle, call/web if data, budget)
-3. Show-on-map, favorites, Quick Pin, GPS, Settings + StudioCredit
-4. HotPepper credits visible; new strings in all 3 ARB files
+2. Splash → search panel (radius, count, parking/private-room filters, genre chips) → pill search → sheet + markers → detail (subtitle, call/web if data, budget)
+3. Results sheet: drag extent (map padding tracks), random pick (left dice icon), close (right)
+4. Show-on-map, favorites, Quick Pin, GPS, Settings + StudioCredit
+5. HotPepper credits visible; new strings in all 3 ARB files
 
 ## Do not commit
 

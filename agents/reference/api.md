@@ -5,6 +5,7 @@
 - **Base URL:** `https://webservice.recruit.co.jp/hotpepper/gourmet/v1/`
 - **Implementation:** `lib/services/hotpepper_api.dart`
 - **Reference:** https://webservice.recruit.co.jp/doc/hotpepper/reference.html
+- **HTTP timeout:** 15 seconds (`http.get(uri).timeout(...)`)
 
 ## Search parameters (implemented)
 
@@ -14,6 +15,10 @@
 | `range` | 1~5 | `SearchRadiusDropdown` |
 | `count` | 10 / 20 / 30 / 50 / 100 | `SearchCountDropdown` |
 | `genre` | G001, G004, … (optional) | Genre chips in `SearchFloatingControls` |
+| `parking` | `1` when enabled | `FilterChip` — parking |
+| `private_room` | `1` when enabled | `FilterChip` — private room |
+
+Parking / private-room toggles clear cached results; user must re-search.
 
 ### Genre codes (`search_genre.dart`)
 
@@ -42,6 +47,8 @@ Labels via `genreLabel()` in `l10n_helpers.dart`.
 
 No pagination — first page only. `count` caps load at wide radius.
 
+**Search deduplication:** `SearchScreen` increments `_searchRequestId` per request; stale responses are ignored after `await`.
+
 ## NOT supported — do not implement
 
 | Feature | Reason |
@@ -50,7 +57,7 @@ No pagination — first page only. `count` caps load at wide radius.
 
 ### Alternative API filters (available, not yet in UI)
 
-`parking`, `private_room`, `wifi`, `card`, `non_smoking`, `midnight`, etc. — all `0`/`1` query params per official reference.
+`wifi`, `card`, `non_smoking`, `midnight`, etc. — all `0`/`1` query params per official reference.
 
 ## Shop model (`lib/models/shop.dart`)
 
@@ -61,7 +68,7 @@ No pagination — first page only. `count` caps load at wide radius.
 | `phone` | `phone` | `ShopDetailActions` → `tel:` |
 | `shopUrl` | `urls.smart_phone` → `mobile` → `pc` | external browser |
 | `budget` | `budget.name` → `budget.average` | `DetailSection` |
-| `genreName` | `genre.name` | subtitle `[genre]` |
+| `genreName` | `genre.name` | list tile + subtitle `[genre]` |
 | `catchPhrase` | `catch` | subtitle with genre |
 
 - `shopSubtitle` — `[genreName] catchPhrase` formatting

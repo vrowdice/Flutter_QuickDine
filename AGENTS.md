@@ -25,7 +25,7 @@ ALWAYS:
 
 ## QuickDine
 
-Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API. Full-screen **Google Maps** hub with radius/count/**genre** filters, bottom-sheet results, shop **detail** (call, web, budget), **Quick Pins**, and **favorites**. UI: **ko / ja / en**. Studio splash: **Vrowdice** logo.
+Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API. Full-screen **Google Maps** hub with radius/count/**genre** filters, **parking / private-room** filter chips, bottom-sheet results (incl. **random pick**), shop **detail** (call, web, budget), **Quick Pins**, and **favorites**. UI: **ko / ja / en**. Studio splash: **Vrowdice** logo.
 
 **Package ID:** `com.vrowdice.quick_dine`
 
@@ -33,9 +33,9 @@ Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API
 
 ### When changing code
 
-1. [agents/reference/architecture.md](agents/reference/architecture.md) — flow, search panel, splash, theme
+1. [agents/reference/architecture.md](agents/reference/architecture.md) — flow, search panel, sheet `ValueNotifier`, splash, theme
 2. [agents/reference/api.md](agents/reference/api.md) — HotPepper params, `Shop` fields, credits; **no open-now filter**
-3. [agents/reference/maps.md](agents/reference/maps.md) — map padding, markers
+3. [agents/reference/maps.md](agents/reference/maps.md) — map padding, markers, `SearchOverlayMetrics`
 4. [agents/reference/localization.md](agents/reference/localization.md)
 5. [agents/setup/dev-environment.md](agents/setup/dev-environment.md)
 
@@ -48,10 +48,10 @@ Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API
 | Theme | `theme/app_theme.dart` | `AppColors`, Noto fonts, primary AppBar |
 | Screens | `screens/` | Splash, Search (map hub), Detail, Favorites, Settings |
 | Widgets | `widgets/` | Search panel, map, credits, `ShopDetailActions`, `StudioCredit` |
-| Services | `services/` | HotPepper API (`genre` optional), GPS, prefs, Maps key |
+| Services | `services/` | HotPepper API (`genre`, `parking`, `private_room`), GPS, prefs, Maps key |
 | Models | `models/` | `Shop` (phone, url, budget, genre, catch), `QuickPin` |
 | Constants | `constants/` | API, radius, count, **genre codes**, `app_assets` |
-| Utils | `utils/` | l10n helpers, `url_launcher_helpers` |
+| Utils | `utils/` | l10n helpers, `url_launcher_helpers`, `navigation_helpers`, `search_overlay_metrics`, `confirm_dialog` |
 | l10n | `l10n/` | `app_*.arb` |
 
 ### Hard constraints
@@ -62,6 +62,7 @@ Flutter app that searches restaurants in **Japan** via the HotPepper Gourmet API
 - **Secrets:** `assets/env` gitignored; template `assets/env.example`.
 - **UI strings** in ARB only (except API-returned shop text).
 - **Vrowdice branding** only in splash + Settings `StudioCredit` — not on HotPepper credit UI.
+- **Sheet drag:** update `_sheetExtentNotifier`, not full-screen `setState`.
 
 ### Verify changes
 

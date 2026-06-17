@@ -19,12 +19,15 @@
 | Keys | Used in |
 |------|---------|
 | `searchRadius`, `searchPill`, `searchMaxCount` | Search panel |
+| `filterParking`, `filterPrivateRoom` | Filter chips in `SearchFloatingControls` |
 | `genreAll`, `genreIzakaya`, … `genreCafe` | Genre chips (`genreLabel`) |
+| `randomPick`, `close` | `SearchResultsSheet` header buttons |
 | `showOnMap`, `shopLocationUnavailable`, `showedShopOnMap` | Map return flow |
 | `detailCall`, `detailWeb`, `averageBudget` | Detail actions & budget |
 | `launchPhoneFailed`, `launchWebFailed` | url_launcher errors |
 | `developedBy` | `StudioCredit` (Settings) |
 | `defaultSearchRadius`, settings / data / language keys | Settings |
+| `confirmClearFavorites`, `confirmClearQuickPins`, `*Cleared` | `clearWithConfirm` flows |
 
 ## Adding strings
 
