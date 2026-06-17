@@ -59,7 +59,9 @@ class HotPepperApi {
       queryParameters: queryParameters,
     );
 
-    final response = await http.get(uri);
+    final response = await http
+        .get(uri)
+        .timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
       throw Exception('API 오류: HTTP ${response.statusCode}');
     }

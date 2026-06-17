@@ -133,6 +133,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get close => '閉じる';
 
   @override
+  String get randomPick => 'おまかせ';
+
+  @override
   String get addCurrentLocation => '現在地を追加';
 
   @override

@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/shop.dart';
+import '../services/favorites_service.dart';
 import 'hot_pepper_credit_bar.dart';
 import 'shop_list_tile.dart';
 
@@ -78,9 +81,16 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
     if (mounted) widget.onDismissed();
   }
 
+  void _pickRandomShop() {
+    if (widget.shops.isEmpty) return;
+    final shop = widget.shops[Random().nextInt(widget.shops.length)];
+    widget.onShopTap(shop);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return DraggableScrollableSheet(
       controller: _sheetController,
@@ -99,7 +109,7 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
           child: Column(
             children: [
               const SizedBox(height: 8),
-              // 핸들은 정중앙, 닫기 버튼은 우측 — 서로 정렬에 영향 없음
+              // 핸들은 정중앙, 랜덤(좌) · 닫기(우)
               SizedBox(
                 height: 40,
                 child: Stack(
@@ -107,6 +117,18 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                     const Align(
                       alignment: Alignment.center,
                       child: _SheetDragHandle(),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: widget.shops.isEmpty ? null : _pickRandomShop,
+                        tooltip: l10n.randomPick,
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          Icons.casino_outlined,
+                          color: colorScheme.primary,
+                        ),
+                      ),
                     ),
                     Align(
                       alignment: Alignment.centerRight,
@@ -134,27 +156,34 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                 ),
               ),
               Expanded(
-                child: ListView.separated(
-                  controller: scrollController,
-                  padding: const EdgeInsets.only(bottom: 8),
-                  itemCount: widget.shops.length + 1,
-                  separatorBuilder: (context, index) {
-                    if (index >= widget.shops.length - 1) {
-                      return const SizedBox.shrink();
-                    }
-                    return const Divider(height: 1);
-                  },
-                  itemBuilder: (context, index) {
-                    if (index == widget.shops.length) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: HotPepperCreditBar(),
-                      );
-                    }
-                    final shop = widget.shops[index];
-                    return ShopListTile(
-                      shop: shop,
-                      onTap: () => widget.onShopTap(shop),
+                child: ListenableBuilder(
+                  listenable: FavoritesService.instance,
+                  builder: (context, _) {
+                    final favorites = FavoritesService.instance;
+                    return ListView.separated(
+                      controller: scrollController,
+                      padding: const EdgeInsets.only(bottom: 8),
+                      itemCount: widget.shops.length + 1,
+                      separatorBuilder: (context, index) {
+                        if (index >= widget.shops.length - 1) {
+                          return const SizedBox.shrink();
+                        }
+                        return const Divider(height: 1);
+                      },
+                      itemBuilder: (context, index) {
+                        if (index == widget.shops.length) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: HotPepperCreditBar(),
+                          );
+                        }
+                        final shop = widget.shops[index];
+                        return ShopListTile(
+                          shop: shop,
+                          isFavorite: favorites.isFavorite(shop),
+                          onTap: () => widget.onShopTap(shop),
+                        );
+                      },
                     );
                   },
                 ),

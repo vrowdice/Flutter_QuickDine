@@ -38,6 +38,7 @@
   "quickPinDeleteConfirm": "「{name}」 퀵핀을 삭제할까요?",
   "delete": "삭제",
   "close": "닫기",
+  "randomPick": "아무거나 골라줘",
   "addCurrentLocation": "현재 위치 추가",
   "quickPinEmptyHint": "지도에서 위치를 고른 뒤\n「현재 위치 추가」로\n저장하세요.",
   "searchResults": "검색 결과 ({count}건)",

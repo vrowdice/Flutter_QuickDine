@@ -328,6 +328,12 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
+  /// No description provided for @randomPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick for me'**
+  String get randomPick;
+
   /// No description provided for @addCurrentLocation.
   ///
   /// In en, this message translates to:

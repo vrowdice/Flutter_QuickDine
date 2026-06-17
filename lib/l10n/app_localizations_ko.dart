@@ -133,6 +133,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get close => '닫기';
 
   @override
+  String get randomPick => '아무거나 골라줘';
+
+  @override
   String get addCurrentLocation => '현재 위치 추가';
 
   @override

@@ -43,12 +43,21 @@ class MapLocationPickerState extends State<MapLocationPicker> {
   GoogleMapController? _mapController;
   late LatLng _selectedPosition;
   bool _myLocationEnabled = false;
+  Set<Marker> _markers = {};
+  Set<Circle> _circles = {};
+  bool _overlaysDirty = true;
 
   @override
   void initState() {
     super.initState();
     _selectedPosition = LatLng(widget.initialLat, widget.initialLng);
     _syncMyLocationLayer();
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 
   Future<void> refreshMyLocationLayer() => _syncMyLocationLayer();
@@ -70,14 +79,31 @@ class MapLocationPickerState extends State<MapLocationPicker> {
         oldWidget.initialLng != widget.initialLng) {
       final target = LatLng(widget.initialLat, widget.initialLng);
       setState(() => _selectedPosition = target);
+      _markOverlaysDirty();
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(target, 15),
       );
+    } else if (oldWidget.quickPins != widget.quickPins ||
+        oldWidget.shops != widget.shops ||
+        oldWidget.searchRadiusRange != widget.searchRadiusRange) {
+      _markOverlaysDirty();
     }
   }
 
+  void _markOverlaysDirty() => _overlaysDirty = true;
+
+  void _ensureOverlays(AppLocalizations l10n, Color primary) {
+    if (!_overlaysDirty) return;
+    _markers = _buildMarkers(l10n);
+    _circles = _buildSearchRadiusCircle(primary);
+    _overlaysDirty = false;
+  }
+
   void _selectPosition(LatLng target, {QuickPin? quickPin}) {
-    setState(() => _selectedPosition = target);
+    setState(() {
+      _selectedPosition = target;
+      _markOverlaysDirty();
+    });
     widget.onLocationChanged(target, quickPin: quickPin);
   }
 
@@ -210,6 +236,7 @@ class MapLocationPickerState extends State<MapLocationPicker> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final primary = Theme.of(context).colorScheme.primary;
+    _ensureOverlays(l10n, primary);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -222,8 +249,8 @@ class MapLocationPickerState extends State<MapLocationPicker> {
           top: widget.topPadding,
           bottom: widget.bottomPadding,
         ),
-        markers: _buildMarkers(l10n),
-        circles: _buildSearchRadiusCircle(primary),
+        markers: _markers,
+        circles: _circles,
         onMapCreated: (controller) => _mapController = controller,
         onTap: _selectPosition,
         myLocationEnabled: _myLocationEnabled,

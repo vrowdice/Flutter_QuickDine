@@ -134,6 +134,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
+  String get randomPick => 'Pick for me';
+
+  @override
   String get addCurrentLocation => 'Add current location';
 
   @override

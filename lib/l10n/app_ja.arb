@@ -38,6 +38,7 @@
   "quickPinDeleteConfirm": "「{name}」クイックピンを削除しますか？",
   "delete": "削除",
   "close": "閉じる",
+  "randomPick": "おまかせ",
   "addCurrentLocation": "現在地を追加",
   "quickPinEmptyHint": "地図で位置を選び、\n「現在地を追加」で\n保存してください。",
   "searchResults": "検索結果 ({count}件)",

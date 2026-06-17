@@ -28,3 +28,26 @@ Future<bool> showConfirmDialog(
   );
   return result == true;
 }
+
+/// 확인 후 작업 실행 → 성공 스낵바 표시
+Future<void> clearWithConfirm(
+  BuildContext context, {
+  required String title,
+  required String message,
+  required Future<void> Function() onClear,
+  required String successMessage,
+}) async {
+  final ok = await showConfirmDialog(
+    context,
+    title: title,
+    message: message,
+  );
+  if (!ok || !context.mounted) return;
+
+  await onClear();
+  if (!context.mounted) return;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(successMessage)),
+  );
+}

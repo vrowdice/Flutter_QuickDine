@@ -8,11 +8,13 @@ import 'favorite_icon_button.dart';
 class ShopListTile extends StatelessWidget {
   final Shop shop;
   final VoidCallback onTap;
+  final bool? isFavorite;
 
   const ShopListTile({
     super.key,
     required this.shop,
     required this.onTap,
+    this.isFavorite,
   });
 
   @override
@@ -62,7 +64,7 @@ class ShopListTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FavoriteIconButton(shop: shop),
+          FavoriteIconButton(shop: shop, isFavorite: isFavorite),
           const Icon(Icons.chevron_right),
         ],
       ),

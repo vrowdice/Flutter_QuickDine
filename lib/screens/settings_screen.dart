@@ -12,46 +12,32 @@ import '../widgets/studio_credit.dart';
 import '../widgets/search_count_dropdown.dart';
 import '../widgets/search_radius_dropdown.dart';
 
+InputDecoration _settingsFieldDecoration(String labelText) {
+  return InputDecoration(
+    labelText: labelText,
+    border: const OutlineInputBorder(),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  );
+}
+
+TextStyle _hintTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 12,
+    color: Theme.of(context).colorScheme.onSurfaceVariant,
+  );
+}
+
 /// 앱 설정 화면
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _clearFavorites(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final ok = await showConfirmDialog(
-      context,
-      title: l10n.confirmClearFavorites,
-      message: l10n.confirmClearFavoritesMessage,
-    );
-    if (!ok || !context.mounted) return;
-
-    await FavoritesService.instance.clearAll();
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.favoritesCleared)),
-    );
-  }
-
-  Future<void> _clearQuickPins(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final ok = await showConfirmDialog(
-      context,
-      title: l10n.confirmClearQuickPins,
-      message: l10n.confirmClearQuickPinsMessage,
-    );
-    if (!ok || !context.mounted) return;
-
-    await QuickPinService.instance.clearAll();
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.quickPinsCleared)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    const sectionTitleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+    const sectionTitleStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -66,49 +52,38 @@ class SettingsScreen extends StatelessWidget {
             ListenableBuilder(
               listenable: SettingsService.instance,
               builder: (context, _) {
-                return SearchRadiusDropdown(
-                  value: SettingsService.instance.defaultSearchRadius,
-                  decoration: InputDecoration(
-                    labelText: l10n.defaultSearchRadius,
-                    border: const OutlineInputBorder(),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  ),
-                  onChanged: SettingsService.instance.setDefaultSearchRadius,
+                final settings = SettingsService.instance;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SearchRadiusDropdown(
+                      value: settings.defaultSearchRadius,
+                      decoration: _settingsFieldDecoration(
+                        l10n.defaultSearchRadius,
+                      ),
+                      onChanged: settings.setDefaultSearchRadius,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.defaultSearchRadiusHint,
+                      style: _hintTextStyle(context),
+                    ),
+                    const SizedBox(height: 16),
+                    SearchCountDropdown(
+                      value: settings.defaultMaxSearchCount,
+                      decoration: _settingsFieldDecoration(
+                        l10n.defaultMaxSearchCount,
+                      ),
+                      onChanged: settings.setDefaultMaxSearchCount,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.defaultMaxSearchCountHint,
+                      style: _hintTextStyle(context),
+                    ),
+                  ],
                 );
               },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.defaultSearchRadiusHint,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListenableBuilder(
-              listenable: SettingsService.instance,
-              builder: (context, _) {
-                return SearchCountDropdown(
-                  value: SettingsService.instance.defaultMaxSearchCount,
-                  decoration: InputDecoration(
-                    labelText: l10n.defaultMaxSearchCount,
-                    border: const OutlineInputBorder(),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  ),
-                  onChanged: SettingsService.instance.setDefaultMaxSearchCount,
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.defaultMaxSearchCountHint,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
             ),
             const SizedBox(height: 24),
             Text(l10n.sectionLanguage, style: sectionTitleStyle),
@@ -117,12 +92,7 @@ class SettingsScreen extends StatelessWidget {
               listenable: SettingsService.instance,
               builder: (context, _) {
                 return InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: l10n.language,
-                    border: const OutlineInputBorder(),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  ),
+                  decoration: _settingsFieldDecoration(l10n.language),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       isExpanded: true,
@@ -153,14 +123,26 @@ class SettingsScreen extends StatelessWidget {
               leading: const Icon(Icons.favorite_border),
               title: Text(l10n.clearAllFavorites),
               subtitle: Text(l10n.clearAllFavoritesSubtitle),
-              onTap: () => _clearFavorites(context),
+              onTap: () => clearWithConfirm(
+                context,
+                title: l10n.confirmClearFavorites,
+                message: l10n.confirmClearFavoritesMessage,
+                onClear: FavoritesService.instance.clearAll,
+                successMessage: l10n.favoritesCleared,
+              ),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.push_pin_outlined),
               title: Text(l10n.clearAllQuickPins),
               subtitle: Text(l10n.clearAllQuickPinsSubtitle),
-              onTap: () => _clearQuickPins(context),
+              onTap: () => clearWithConfirm(
+                context,
+                title: l10n.confirmClearQuickPins,
+                message: l10n.confirmClearQuickPinsMessage,
+                onClear: QuickPinService.instance.clearAll,
+                successMessage: l10n.quickPinsCleared,
+              ),
             ),
             const SizedBox(height: 24),
             Text(l10n.sectionAppInfo, style: sectionTitleStyle),
@@ -180,10 +162,7 @@ class SettingsScreen extends StatelessWidget {
                   Text(
                     l10n.appDescription,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                    style: _hintTextStyle(context),
                   ),
                 ],
               ),

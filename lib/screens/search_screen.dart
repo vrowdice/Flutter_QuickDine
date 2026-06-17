@@ -7,10 +7,12 @@ import '../constants/search_radius.dart';
 import '../l10n/app_localizations.dart';
 import '../models/quick_pin.dart';
 import '../models/shop.dart';
+import '../utils/search_overlay_metrics.dart';
 import '../services/hotpepper_api.dart';
 import '../services/location_service.dart';
 import '../services/settings_service.dart';
 import '../utils/l10n_helpers.dart';
+import '../utils/navigation_helpers.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/hot_pepper_credit_bar.dart';
 import '../widgets/map_location_picker.dart';
@@ -18,7 +20,6 @@ import '../widgets/search_floating_controls.dart';
 import '../widgets/search_map_stack.dart';
 import '../widgets/search_pill_button.dart';
 import '../widgets/search_results_sheet.dart';
-import 'detail_screen.dart';
 import 'favorites_screen.dart';
 import 'settings_screen.dart';
 
@@ -40,7 +41,10 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isLoading = false;
   bool _isQuickPinPanelOpen = false;
   bool _isSheetVisible = false;
-  double _sheetExtent = SearchResultsSheet.initialChildSize;
+  final _sheetExtentNotifier = ValueNotifier<double>(
+    SearchResultsSheet.initialChildSize,
+  );
+  int _searchRequestId = 0;
   String? _selectedPinId;
   String? _selectedGenreCode;
   bool _filterParking = false;
@@ -50,6 +54,9 @@ class _SearchScreenState extends State<SearchScreen> {
   double _searchLng = ApiConstants.defaultMapLng;
 
   List<Shop> _searchResults = [];
+
+  bool get _isResultsSheetVisible =>
+      _searchResults.isNotEmpty && _isSheetVisible && !_isQuickPinPanelOpen;
 
   @override
   void initState() {
@@ -65,6 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     SettingsService.instance.removeListener(_onSettingsChanged);
+    _sheetExtentNotifier.dispose();
     super.dispose();
   }
 
@@ -80,18 +88,54 @@ class _SearchScreenState extends State<SearchScreen> {
     _isSheetVisible = false;
   }
 
+  void _showResultsSheet() {
+    _isSheetVisible = true;
+    _sheetExtentNotifier.value = SearchResultsSheet.initialChildSize;
+  }
+
   void _dismissResultsSheet() => setState(() => _isSheetVisible = false);
+
+  void _updateSheetExtent(double extent) {
+    if (_sheetExtentNotifier.value != extent) {
+      _sheetExtentNotifier.value = extent;
+    }
+  }
+
+  /// 검색 중이 아닐 때만 콜백을 노출 — 플로팅 컨트롤 disabled 처리용
+  ValueChanged<T>? _whenIdle<T>(ValueChanged<T> handler) =>
+      _isLoading ? null : handler;
+
+  void _setGenreAndClear(String? code) {
+    setState(() {
+      _selectedGenreCode = code;
+      _clearSearchResults();
+    });
+  }
+
+  void _setFilterParkingAndClear(bool value) {
+    setState(() {
+      _filterParking = value;
+      _clearSearchResults();
+    });
+  }
+
+  void _setFilterPrivateRoomAndClear(bool value) {
+    setState(() {
+      _filterPrivateRoom = value;
+      _clearSearchResults();
+    });
+  }
 
   Future<void> _onSearchPressed() async {
     // 결과가 있고 시트만 닫힌 상태면 재검색 없이 시트만 다시 표시
     if (_searchResults.isNotEmpty && !_isSheetVisible) {
-      setState(() {
-        _isSheetVisible = true;
-        _sheetExtent = SearchResultsSheet.initialChildSize;
-      });
+      setState(_showResultsSheet);
       return;
     }
 
+    if (_isLoading) return;
+
+    final requestId = ++_searchRequestId;
     setState(() => _isLoading = true);
 
     try {
@@ -105,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen> {
         privateRoom: _filterPrivateRoom,
       );
 
-      if (!mounted) return;
+      if (!mounted || requestId != _searchRequestId) return;
 
       if (shops.isEmpty) {
         setState(_clearSearchResults);
@@ -117,18 +161,19 @@ class _SearchScreenState extends State<SearchScreen> {
 
       setState(() {
         _searchResults = shops;
-        _isSheetVisible = true;
-        _sheetExtent = SearchResultsSheet.initialChildSize;
+        _showResultsSheet();
       });
       await _mapKey.currentState?.fitToSearchResults();
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || requestId != _searchRequestId) return;
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${l10n.errorPrefix}: $e')),
       );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && requestId == _searchRequestId) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -214,10 +259,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _openShopDetail(Shop shop) async {
-    final result = await Navigator.push<Shop>(
-      context,
-      MaterialPageRoute(builder: (_) => DetailScreen(shop: shop)),
-    );
+    final result = await pushShopDetail(context, shop);
     if (result != null && mounted) {
       await _showShopOnMap(result);
     }
@@ -233,12 +275,93 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  Widget _buildMapAndSearchPill({
+    required double stackHeight,
+    required double topInset,
+    required bool sheetVisible,
+  }) {
+    return ValueListenableBuilder<double>(
+      valueListenable: _sheetExtentNotifier,
+      builder: (context, sheetExtent, _) {
+        final metrics = SearchOverlayMetrics.from(
+          sheetVisible: sheetVisible,
+          sheetExtent: sheetExtent,
+          stackHeight: stackHeight,
+        );
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            SearchMapStack(
+              mapKey: _mapKey,
+              searchLat: _searchLat,
+              searchLng: _searchLng,
+              isLoading: _isLoading,
+              isPanelOpen: _isQuickPinPanelOpen,
+              selectedPinId: _selectedPinId,
+              shops: _searchResults,
+              topOverlayInset: topInset,
+              mapBottomPadding: metrics.mapBottomPadding,
+              panelBottomInset: metrics.panelBottomInset,
+              searchRadiusRange: _selectedRadius,
+              onLocationChanged: _onLocationChanged,
+              onShopTap: _openShopDetail,
+              onPanelOpen: () => setState(() => _isQuickPinPanelOpen = true),
+              onPanelClose: () => setState(() => _isQuickPinPanelOpen = false),
+              onCurrentLocation: _moveToCurrentLocation,
+              onPinSelected: (pin) => _mapKey.currentState?.moveTo(
+                pin.lat,
+                pin.lng,
+                quickPin: pin,
+              ),
+            ),
+            if (!_isQuickPinPanelOpen)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: metrics.searchPillBottom,
+                child: Center(
+                  child: SearchPillButton(
+                    isLoading: _isLoading,
+                    onPressed: _onSearchPressed,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFloatingControls() {
+    return SearchFloatingControls(
+      selectedRadius: _selectedRadius,
+      selectedMaxCount: _selectedMaxCount,
+      selectedGenreCode: _selectedGenreCode,
+      filterParking: _filterParking,
+      filterPrivateRoom: _filterPrivateRoom,
+      isLoading: _isLoading,
+      onRadiusChanged: _whenIdle(
+        (range) => setState(
+          () => _selectedRadius = clampSearchRadius(range),
+        ),
+      ),
+      onMaxCountChanged: _whenIdle(
+        (count) => setState(
+          () => _selectedMaxCount = clampSearchCount(count),
+        ),
+      ),
+      onGenreChanged: _whenIdle(_setGenreAndClear),
+      onFilterParkingChanged: _whenIdle(_setFilterParkingAndClear),
+      onFilterPrivateRoomChanged: _whenIdle(_setFilterPrivateRoomAndClear),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final topInset = SearchFloatingControls.estimatedHeight;
-    final sheetVisible =
-        _searchResults.isNotEmpty && _isSheetVisible && !_isQuickPinPanelOpen;
+    final sheetVisible = _isResultsSheetVisible;
 
     return Scaffold(
       appBar: AppBar(
@@ -266,53 +389,20 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // DraggableScrollableSheet는 body(Stack) 높이 기준 — 전체 화면 높이와 다름
-          final stackHeight = constraints.maxHeight;
-          final sheetTop = _sheetExtent * stackHeight;
-          final mapBottomPadding = sheetVisible ? sheetTop : 0.0;
-          const creditBarInset = 44.0;
-          final panelBottomInset =
-              (sheetVisible ? sheetTop : creditBarInset) + 8;
-          final searchPillBottom = (sheetVisible ? sheetTop : creditBarInset) +
-              SearchPillButton.verticalMargin;
-
           return Stack(
             fit: StackFit.expand,
             children: [
-              SearchMapStack(
-                mapKey: _mapKey,
-                searchLat: _searchLat,
-                searchLng: _searchLng,
-                isLoading: _isLoading,
-                isPanelOpen: _isQuickPinPanelOpen,
-                selectedPinId: _selectedPinId,
-                shops: _searchResults,
-                topOverlayInset: topInset,
-                mapBottomPadding: mapBottomPadding,
-                panelBottomInset: panelBottomInset,
-                searchRadiusRange: _selectedRadius,
-                onLocationChanged: _onLocationChanged,
-                onShopTap: _openShopDetail,
-                onPanelOpen: () => setState(() => _isQuickPinPanelOpen = true),
-                onPanelClose: () => setState(() => _isQuickPinPanelOpen = false),
-                onCurrentLocation: _moveToCurrentLocation,
-                onPinSelected: (pin) => _mapKey.currentState?.moveTo(
-                  pin.lat,
-                  pin.lng,
-                  quickPin: pin,
-                ),
+              _buildMapAndSearchPill(
+                stackHeight: constraints.maxHeight,
+                topInset: topInset,
+                sheetVisible: sheetVisible,
               ),
               if (sheetVisible)
                 SearchResultsSheet(
-                  key: ValueKey(_searchResults.length),
                   shops: _searchResults,
                   onShopTap: _openShopDetail,
                   onDismissed: _dismissResultsSheet,
-                  onExtentChanged: (extent) {
-                    if (_sheetExtent != extent) {
-                      setState(() => _sheetExtent = extent);
-                    }
-                  },
+                  onExtentChanged: _updateSheetExtent,
                 ),
               if (!sheetVisible)
                 const Positioned(
@@ -325,55 +415,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: SearchFloatingControls(
-                  selectedRadius: _selectedRadius,
-                  selectedMaxCount: _selectedMaxCount,
-                  selectedGenreCode: _selectedGenreCode,
-                  filterParking: _filterParking,
-                  filterPrivateRoom: _filterPrivateRoom,
-                  isLoading: _isLoading,
-                  onRadiusChanged: _isLoading
-                      ? null
-                      : (range) => setState(
-                            () => _selectedRadius = clampSearchRadius(range),
-                          ),
-                  onMaxCountChanged: _isLoading
-                      ? null
-                      : (count) => setState(
-                            () => _selectedMaxCount = clampSearchCount(count),
-                          ),
-                  onGenreChanged: _isLoading
-                      ? null
-                      : (code) => setState(() {
-                            _selectedGenreCode = code;
-                            _clearSearchResults();
-                          }),
-                  onFilterParkingChanged: _isLoading
-                      ? null
-                      : (value) => setState(() {
-                            _filterParking = value;
-                            _clearSearchResults();
-                          }),
-                  onFilterPrivateRoomChanged: _isLoading
-                      ? null
-                      : (value) => setState(() {
-                            _filterPrivateRoom = value;
-                            _clearSearchResults();
-                          }),
-                ),
+                child: _buildFloatingControls(),
               ),
-              if (!_isQuickPinPanelOpen)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: searchPillBottom,
-                  child: Center(
-                    child: SearchPillButton(
-                      isLoading: _isLoading,
-                      onPressed: _onSearchPressed,
-                    ),
-                  ),
-                ),
             ],
           );
         },

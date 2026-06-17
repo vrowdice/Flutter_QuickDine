@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/shop.dart';
 import '../services/favorites_service.dart';
+import '../utils/navigation_helpers.dart';
 import '../widgets/screen_with_credit.dart';
 import '../widgets/shop_list_tile.dart';
-import 'detail_screen.dart';
 
 /// 저장된 즐겨찾기 목록 화면
 class FavoritesScreen extends StatelessWidget {
@@ -46,12 +45,7 @@ class FavoritesScreen extends StatelessWidget {
                 return ShopListTile(
                   shop: shop,
                   onTap: () async {
-                    final result = await Navigator.push<Shop>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => DetailScreen(shop: shop),
-                      ),
-                    );
+                    final result = await pushShopDetail(context, shop);
                     if (result != null && context.mounted) {
                       Navigator.pop(context, result);
                     }

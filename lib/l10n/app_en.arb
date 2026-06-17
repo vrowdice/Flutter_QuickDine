@@ -64,6 +64,7 @@
   },
   "delete": "Delete",
   "close": "Close",
+  "randomPick": "Pick for me",
   "addCurrentLocation": "Add current location",
   "quickPinEmptyHint": "Pick a location on the map,\nthen tap \"Add current location\".",
   "searchResults": "Results ({count})",
