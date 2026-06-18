@@ -10,7 +10,7 @@ class HotPepperCreditBar extends StatelessWidget {
   Future<void> _openServicePage() async {
     final uri = Uri.parse(ApiConstants.hotPepperServiceUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('크레딧 링크를 열 수 없습니다.');
+      debugPrint('Failed to open HotPepper credit link: $uri');
     }
   }
 

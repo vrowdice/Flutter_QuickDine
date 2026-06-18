@@ -15,7 +15,7 @@ class MapsKeyService {
     final key = dotenv.env[ApiConstants.envGoogleMapsApiKeyName];
     if (key == null || key.isEmpty || key == 'YOUR_GOOGLE_MAPS_API_KEY') {
       throw Exception(
-        'assets/env에 ${ApiConstants.envGoogleMapsApiKeyName}를 설정해 주세요. (assets/env.example 참고)',
+        'Set ${ApiConstants.envGoogleMapsApiKeyName} in assets/env (see assets/env.example).',
       );
     }
 

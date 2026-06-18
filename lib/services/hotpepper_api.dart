@@ -14,7 +14,7 @@ class HotPepperApi {
     final key = dotenv.env[ApiConstants.envApiKeyName];
     if (key == null || key.isEmpty || key == 'YOUR_API_KEY') {
       throw Exception(
-        'assets/env에 ${ApiConstants.envApiKeyName}를 설정해 주세요. (assets/env.example 참고)',
+        'Set ${ApiConstants.envApiKeyName} in assets/env (see assets/env.example).',
       );
     }
     return key;
@@ -63,7 +63,7 @@ class HotPepperApi {
         .get(uri)
         .timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
-      throw Exception('API 오류: HTTP ${response.statusCode}');
+      throw Exception('HotPepper API error: HTTP ${response.statusCode}');
     }
 
     final data = json.decode(response.body) as Map<String, dynamic>;
@@ -73,7 +73,7 @@ class HotPepperApi {
   List<Shop> _parseShops(Map<String, dynamic> data) {
     final results = data['results'] as Map<String, dynamic>?;
     if (results == null) {
-      throw Exception('API 응답 형식이 올바르지 않습니다.');
+      throw Exception('Invalid HotPepper API response format.');
     }
 
     final available = int.tryParse('${results['results_available']}') ?? 0;
