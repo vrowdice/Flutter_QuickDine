@@ -66,11 +66,11 @@ class Shop {
 
     return Shop(
       id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '이름 없음',
-      access: json['access'] as String? ?? '접근 정보 없음',
+      name: json['name'] as String? ?? '',
+      access: json['access'] as String? ?? '',
       logoImage: json['logo_image'] as String? ?? '',
-      address: json['address'] as String? ?? '주소 정보 없음',
-      open: json['open'] as String? ?? '영업시간 정보 없음',
+      address: json['address'] as String? ?? '',
+      open: json['open'] as String? ?? '',
       photoUrl: photoUrl,
       phone: json['phone'] as String? ?? '',
       shopUrl: _parseShopUrl(json),
