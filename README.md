@@ -18,6 +18,7 @@ A Flutter app to discover nearby restaurants in **Japan** using the [HotPepper G
 | **HotPepper search** | Radius 300 m–3000 m (5 steps), max results 10–100 per request |
 | **Filters** | Genre (e.g. izakaya, ramen), parking, private room |
 | **Results UX** | Shop markers on map + draggable bottom sheet list (name, access, thumbnail) |
+| **Random pick** | Dice button on the results sheet — opens a random shop’s detail page |
 | **Detail** | Photo, genre/catch copy, budget, address, hours, access; call & web links |
 | **Quick pins** | Save named locations and jump back with one tap |
 | **Favorites** | Persist shops locally (`shared_preferences`) |
@@ -149,9 +150,10 @@ agents/                     # Agent harness docs (English)
 1. Launch app → splash → search screen (map loads).  
 2. Move map to a **Japan** coordinate (or allow GPS if in Japan).  
 3. Set radius / max count; optional genre or parking / private-room filters.  
-4. Tap the bottom **Search** pill → results on map + bottom sheet.  
-5. Open a shop → detail; try **Call** / **Web** if available.  
-6. Add to favorites; open **Settings** to switch language.
+4. Tap the bottom **Search** pill → results on map + bottom sheet.
+5. Optional: tap the **dice** icon (top-left of sheet) for a random shop → detail.
+6. Open a shop → detail; try **Call** / **Web** if available.
+7. Add to favorites; open **Settings** to switch language.
 
 ---
 
