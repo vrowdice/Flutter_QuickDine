@@ -27,10 +27,12 @@ https://github.com/vrowdice/Flutter_QuickDine
 ### 開発環境
 - Flutter SDK（Dart ^3.12.1）
 - Android Studio（Android ビルド）
-- Xcode（iOS ビルド・macOS 環境）
 - Google Cloud Console（Google Maps API キー）
 - リクルート Web サービス（ホットペッパー API キー）
-- Cursor（生成 AI 支援による開発）
+- VSCode (コード実装)
+- Cursor（コード実装・デバッグ支援）
+- Google Gemini / NotebookLM（企画整理・仕様検討）
+- Adobe Photoshop（アプリアイコン制作）
 
 ### 開発言語
 Dart 3.x / Flutter
@@ -65,7 +67,7 @@ Dart 3.x / Flutter
 ※ パッケージ ID: com.vrowdice.quick_dine
 
 ## 開発期間
-2026年6月10日〜2026年6月17日
+2026年6月10日〜2026年6月18日
 
 ## アプリケーション機能
 
@@ -109,10 +111,25 @@ Dart 3.x / Flutter
 ### 利用技術（フレームワークやAIなど）の選定理由
 - **Flutter / Dart**：課題で許可されている開発言語のうち、習熟度が最も高く、Android・iOS を単一コードベースで提出できるため選択した。
 - **Google Maps**：検索中心の視覚的な指定と結果マーカー表示に必須と判断した。
-- **生成 AI（Cursor）**：ボトムシートの状態管理、API 連携、UI 調整などの実装支援に利用した。生成コードは採用前に内容を確認し、理解した上で取り込んだ（課題補足事項に準拠）。
+- **生成 AI の役割分担**
+  - **Cursor**：Dart / Flutter のコード実装、リファクタリング、デバッグ支援に利用。生成コードは採用前に内容を確認し、理解した上で取り込んだ（課題補足事項に準拠）。
+  - **Google Gemini（NotebookLM）**：機能企画、HotPepper API 調査、簡易仕様書の構成整理、README 文案のたたき台作成など、**設計・ドキュメント段階**で利用。実装コードの直接生成は Cursor 側で行った。
+
+### アプリアイコン・ロゴ（Photoshop 自作）
+- **制作ツール**：Adobe Photoshop（AI 生成画像ではなく、作者が直接デザイン・書き出し）
+- **ストア用マスター**
+  - `AppIcons/appstore.png` — App Store 用（1024×1024 相当）
+  - `AppIcons/playstore.png` — Google Play 用（512×512 相当）
+- **各サイズ一式**：`AppIcons/Assets.xcassets/`（iOS）、`AppIcons/android/mipmap-*/`（Android）
+- **デザインコンセプト**
+  - **地図ピン（位置情報）** のシルエットをベースに、その内側を **皿（食事・レストラン）** の円形で表現
+  - 皿の上に **箸（和食・飲食）** を重ね、位置情報から飲食店を探すアプリであることを一目で伝える
+  - 配色：クリーム色のピン本体、テラコッタ（橙）の皿、ダークグリーンの箸 — アプリ UI の primary / secondary トーンと統一
+  - フラット・ミニマルなベクター調で、小サイズ（ホーム画面アイコン）でも判別しやすい構成
 
 ### デザイン面でこだわったポイント
-- テラコotta（primary）+ セージグリーン（secondary）のブランドカラー、primary 色の AppBar
+- **アプリアイコン（Photoshop 自作）**：ピン＋皿＋箸で「位置 × 飲食店検索」を象徴（上記「アプリアイコン・ロゴ」参照）
+- テラコotta（primary）+ セージグリーン（secondary）のブランドカラー、primary 色の AppBar — アイコン配色と統一
 - 検索パネルを 1 枚のカードに統合（半径・件数 + 条件チップ + ジャンルチップ）
 - 条件チップ（FilterChip・チェックマーク付き）とジャンルチップ（ChoiceChip）を区切り線で視覚分離
 - 画面下部中央の Pill 型検索ボタンで片手操作を最適化
@@ -163,6 +180,11 @@ Dart 3.x / Flutter
 
 ## 生成 AI 利用について（課題補足事項への対応）
 
-- 生成 AI（Cursor）をコード生成・デバッグ支援に利用した
+| ツール | 用途 | 備考 |
+|--------|------|------|
+| **Cursor** | コード実装・修正・デバッグ | ボトムシート状態管理、API 連携、UI 調整など |
+| **Gemini（NotebookLM）** | 企画整理・仕様・ドキュメント | API 調査、機能案、簡易仕様書・README の構成 |
+
 - 提出コードの品質・正確性の責任は提出者本人にある
-- 採用した AI 生成コードは、状態管理・API パラメータ・HotPepper 利用規約などについて内容を確認した上で取り込んだ
+- Cursor が生成したコードは、状態管理・API パラメータ・HotPepper 利用規約などについて内容を確認した上で取り込んだ
+- **アプリアイコンは Photoshop で自作**（生成 AI 画像ではない）
