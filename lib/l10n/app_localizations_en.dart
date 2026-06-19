@@ -185,6 +185,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterPrivateRoom => 'Private room';
 
   @override
+  String get filterWifi => 'Wi‑Fi';
+
+  @override
+  String get filterCard => 'Cards';
+
+  @override
+  String get filterNonSmoking => 'Non-smoking';
+
+  @override
   String get detailWeb => 'Details / Reserve';
 
   @override

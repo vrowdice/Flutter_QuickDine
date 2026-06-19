@@ -23,16 +23,14 @@ class HotPepperApi {
   /// [count]: API `count` — max count로 1회 요청량 제한 (3000m 대량 방어)
   /// [range]: HotPepper `range` 1~5 (300m~3000m)
   /// [genre]: HotPepper `genre` 코드 (예: G001). null이면 파라미터 생략
-  /// [parking]: true → `parking=1`
-  /// [privateRoom]: true → `private_room=1`
+  /// [facilityFilters]: enabled keys → `key=1` (parking, private_room, wifi, …)
   Future<List<Shop>> searchShops({
     required double lat,
     required double lng,
     required int count,
     int range = kDefaultSearchRadius,
     String? genre,
-    bool parking = false,
-    bool privateRoom = false,
+    Map<String, bool> facilityFilters = const {},
   }) async {
     final safeCount = clampSearchCount(count).clamp(1, ApiConstants.maxResultCount);
     final safeRange = clampSearchRadius(range);
@@ -48,11 +46,10 @@ class HotPepperApi {
     if (genre != null && genre.isNotEmpty) {
       queryParameters['genre'] = genre;
     }
-    if (parking) {
-      queryParameters['parking'] = '1';
-    }
-    if (privateRoom) {
-      queryParameters['private_room'] = '1';
+    for (final entry in facilityFilters.entries) {
+      if (entry.value) {
+        queryParameters[entry.key] = '1';
+      }
     }
 
     final uri = Uri.parse(ApiConstants.hotPepperApiBaseUrl).replace(

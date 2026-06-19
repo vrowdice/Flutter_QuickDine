@@ -418,6 +418,24 @@ abstract class AppLocalizations {
   /// **'Private room'**
   String get filterPrivateRoom;
 
+  /// No description provided for @filterWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi‑Fi'**
+  String get filterWifi;
+
+  /// No description provided for @filterCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get filterCard;
+
+  /// No description provided for @filterNonSmoking.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-smoking'**
+  String get filterNonSmoking;
+
   /// No description provided for @detailWeb.
   ///
   /// In en, this message translates to:

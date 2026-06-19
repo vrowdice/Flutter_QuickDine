@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../constants/api_constants.dart';
 import '../constants/search_count.dart';
+import '../constants/search_facility_filters.dart';
 import '../constants/search_radius.dart';
 import '../l10n/app_localizations.dart';
 import '../models/quick_pin.dart';
@@ -47,8 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
   int _searchRequestId = 0;
   String? _selectedPinId;
   String? _selectedGenreCode;
-  bool _filterParking = false;
-  bool _filterPrivateRoom = false;
+  final Map<String, bool> _facilityFilters = initialFacilityFilterState();
 
   double _searchLat = ApiConstants.defaultMapLat;
   double _searchLng = ApiConstants.defaultMapLng;
@@ -112,16 +112,9 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  void _setFilterParkingAndClear(bool value) {
+  void _setFacilityFilterAndClear(String apiParam, bool value) {
     setState(() {
-      _filterParking = value;
-      _clearSearchResults();
-    });
-  }
-
-  void _setFilterPrivateRoomAndClear(bool value) {
-    setState(() {
-      _filterPrivateRoom = value;
+      _facilityFilters[apiParam] = value;
       _clearSearchResults();
     });
   }
@@ -145,8 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
         count: _selectedMaxCount,
         range: _selectedRadius,
         genre: _selectedGenreCode,
-        parking: _filterParking,
-        privateRoom: _filterPrivateRoom,
+        facilityFilters: _facilityFilters,
       );
 
       if (!mounted || requestId != _searchRequestId) return;
@@ -338,8 +330,7 @@ class _SearchScreenState extends State<SearchScreen> {
       selectedRadius: _selectedRadius,
       selectedMaxCount: _selectedMaxCount,
       selectedGenreCode: _selectedGenreCode,
-      filterParking: _filterParking,
-      filterPrivateRoom: _filterPrivateRoom,
+      facilityFilters: _facilityFilters,
       isLoading: _isLoading,
       onRadiusChanged: _whenIdle(
         (range) => setState(
@@ -352,8 +343,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
       onGenreChanged: _whenIdle(_setGenreAndClear),
-      onFilterParkingChanged: _whenIdle(_setFilterParkingAndClear),
-      onFilterPrivateRoomChanged: _whenIdle(_setFilterPrivateRoomAndClear),
+      onFacilityFilterChanged: _isLoading ? null : _setFacilityFilterAndClear,
     );
   }
 

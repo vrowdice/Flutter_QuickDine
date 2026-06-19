@@ -182,6 +182,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filterPrivateRoom => '개별실';
 
   @override
+  String get filterWifi => 'Wi‑Fi';
+
+  @override
+  String get filterCard => '카드';
+
+  @override
+  String get filterNonSmoking => '금연';
+
+  @override
   String get detailWeb => '상세/예약';
 
   @override

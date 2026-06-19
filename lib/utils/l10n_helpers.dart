@@ -36,6 +36,23 @@ String genreLabel(AppLocalizations l10n, String? code) {
   }
 }
 
+String facilityFilterLabel(AppLocalizations l10n, String apiParam) {
+  switch (apiParam) {
+    case 'parking':
+      return l10n.filterParking;
+    case 'private_room':
+      return l10n.filterPrivateRoom;
+    case 'wifi':
+      return l10n.filterWifi;
+    case 'card':
+      return l10n.filterCard;
+    case 'non_smoking':
+      return l10n.filterNonSmoking;
+    default:
+      return apiParam;
+  }
+}
+
 String languageLabel(AppLocalizations l10n, String code) {
   switch (code) {
     case 'ko':

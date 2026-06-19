@@ -182,6 +182,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filterPrivateRoom => '個室';
 
   @override
+  String get filterWifi => 'Wi‑Fi';
+
+  @override
+  String get filterCard => 'カード';
+
+  @override
+  String get filterNonSmoking => '禁煙';
+
+  @override
   String get detailWeb => '詳細/予約';
 
   @override

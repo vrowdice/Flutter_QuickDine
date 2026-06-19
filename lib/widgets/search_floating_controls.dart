@@ -1,38 +1,35 @@
 import 'package:flutter/material.dart';
 
+import '../constants/search_facility_filters.dart';
 import '../constants/search_genre.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/l10n_helpers.dart';
 import 'search_count_dropdown.dart';
 import 'search_radius_dropdown.dart';
 
-/// 지도 상단 통합 검색 패널 — 반경·개수 + 조건·장르 필터
+/// 지도 상단 통합 검색 패널 — 반경·개수 + 시설 필터 + 장르
 class SearchFloatingControls extends StatelessWidget {
   final int selectedRadius;
   final int selectedMaxCount;
   final String? selectedGenreCode;
-  final bool filterParking;
-  final bool filterPrivateRoom;
+  final Map<String, bool> facilityFilters;
   final bool isLoading;
   final ValueChanged<int>? onRadiusChanged;
   final ValueChanged<int>? onMaxCountChanged;
   final ValueChanged<String?>? onGenreChanged;
-  final ValueChanged<bool>? onFilterParkingChanged;
-  final ValueChanged<bool>? onFilterPrivateRoomChanged;
+  final void Function(String apiParam, bool value)? onFacilityFilterChanged;
 
   const SearchFloatingControls({
     super.key,
     required this.selectedRadius,
     required this.selectedMaxCount,
     required this.selectedGenreCode,
-    required this.filterParking,
-    required this.filterPrivateRoom,
+    required this.facilityFilters,
     required this.isLoading,
     required this.onRadiusChanged,
     required this.onMaxCountChanged,
     required this.onGenreChanged,
-    required this.onFilterParkingChanged,
-    required this.onFilterPrivateRoomChanged,
+    required this.onFacilityFilterChanged,
   });
 
   /// 플로팅 카드 좌우 여백 — 퀵핀 버튼 left 정렬과 동일
@@ -49,6 +46,8 @@ class SearchFloatingControls extends StatelessWidget {
   static const double estimatedHeight = _outerTopPadding +
       _innerPaddingV +
       _dropdownRowHeight +
+      _rowGap +
+      _chipRowHeight +
       _rowGap +
       _chipRowHeight +
       _innerPaddingV +
@@ -122,13 +121,18 @@ class SearchFloatingControls extends StatelessWidget {
               const SizedBox(height: _rowGap),
               SizedBox(
                 height: _chipRowHeight,
-                child: _SearchFilterChipRow(
-                  filterParking: filterParking,
-                  filterPrivateRoom: filterPrivateRoom,
+                child: _FacilityFilterChipRow(
+                  facilityFilters: facilityFilters,
+                  isLoading: isLoading,
+                  onFacilityFilterChanged: onFacilityFilterChanged,
+                ),
+              ),
+              const SizedBox(height: _rowGap),
+              SizedBox(
+                height: _chipRowHeight,
+                child: _GenreChipRow(
                   selectedGenreCode: selectedGenreCode,
                   isLoading: isLoading,
-                  onFilterParkingChanged: onFilterParkingChanged,
-                  onFilterPrivateRoomChanged: onFilterPrivateRoomChanged,
                   onGenreChanged: onGenreChanged,
                 ),
               ),
@@ -140,111 +144,117 @@ class SearchFloatingControls extends StatelessWidget {
   }
 }
 
-class _SearchFilterChipRow extends StatelessWidget {
-  final bool filterParking;
-  final bool filterPrivateRoom;
-  final String? selectedGenreCode;
+class _FacilityFilterChipRow extends StatelessWidget {
+  final Map<String, bool> facilityFilters;
   final bool isLoading;
-  final ValueChanged<bool>? onFilterParkingChanged;
-  final ValueChanged<bool>? onFilterPrivateRoomChanged;
-  final ValueChanged<String?>? onGenreChanged;
+  final void Function(String apiParam, bool value)? onFacilityFilterChanged;
 
-  const _SearchFilterChipRow({
-    required this.filterParking,
-    required this.filterPrivateRoom,
-    required this.selectedGenreCode,
+  const _FacilityFilterChipRow({
+    required this.facilityFilters,
     required this.isLoading,
-    required this.onFilterParkingChanged,
-    required this.onFilterPrivateRoomChanged,
-    required this.onGenreChanged,
+    required this.onFacilityFilterChanged,
   });
 
   static const double _scrollPaddingH = 16;
   static const double _chipSpacing = 8;
-  static const double _dividerHeight = 24;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final children = <Widget>[
-      _buildFilterChip(
-        context,
-        label: l10n.filterParking,
-        selected: filterParking,
-        onSelected: (value) => onFilterParkingChanged?.call(value),
-      ),
-      const SizedBox(width: _chipSpacing),
-      _buildFilterChip(
-        context,
-        label: l10n.filterPrivateRoom,
-        selected: filterPrivateRoom,
-        onSelected: (value) => onFilterPrivateRoomChanged?.call(value),
-      ),
-      const SizedBox(width: _chipSpacing),
-      _buildGroupDivider(context),
-      const SizedBox(width: _chipSpacing),
-      for (var i = 0; i < kSearchGenreOptions.length; i++) ...[
-        if (i > 0) const SizedBox(width: _chipSpacing),
-        _buildGenreChip(context, kSearchGenreOptions[i]),
-      ],
-    ];
-
-    return ListView(
+    return ListView.separated(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: _scrollPaddingH),
-      children: children,
+      itemCount: kSearchFacilityFilters.length,
+      separatorBuilder: (_, _) => const SizedBox(width: _chipSpacing),
+      itemBuilder: (context, index) {
+        final option = kSearchFacilityFilters[index];
+        final selected = facilityFilters[option.apiParam] ?? false;
+
+        return _FilterChip(
+          label: facilityFilterLabel(l10n, option.apiParam),
+          selected: selected,
+          isLoading: isLoading,
+          onSelected: (value) =>
+              onFacilityFilterChanged?.call(option.apiParam, value),
+        );
+      },
     );
   }
+}
 
-  Widget _buildGroupDivider(BuildContext context) {
-    final outline = Theme.of(context).colorScheme.outlineVariant;
-    return Center(
-      child: Container(
-        width: 1,
-        height: _dividerHeight,
-        color: outline,
-      ),
-    );
-  }
+class _GenreChipRow extends StatelessWidget {
+  final String? selectedGenreCode;
+  final bool isLoading;
+  final ValueChanged<String?>? onGenreChanged;
 
-  Widget _buildGenreChip(BuildContext context, SearchGenreOption option) {
+  const _GenreChipRow({
+    required this.selectedGenreCode,
+    required this.isLoading,
+    required this.onGenreChanged,
+  });
+
+  static const double _scrollPaddingH = 16;
+  static const double _chipSpacing = 8;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
-    final isSelected = selectedGenreCode == option.code;
-    final label = genreLabel(l10n, option.code);
 
-    return ChoiceChip(
-      label: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-          color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
-        ),
-      ),
-      selected: isSelected,
-      showCheckmark: false,
-      visualDensity: VisualDensity.compact,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      labelPadding: EdgeInsets.zero,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      shape: const StadiumBorder(),
-      side: BorderSide.none,
-      selectedColor: colorScheme.primary,
-      backgroundColor: Colors.grey.shade200,
-      onSelected: isLoading
-          ? null
-          : (_) => onGenreChanged?.call(option.code),
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: _scrollPaddingH),
+      itemCount: kSearchGenreOptions.length,
+      separatorBuilder: (_, _) => const SizedBox(width: _chipSpacing),
+      itemBuilder: (context, index) {
+        final option = kSearchGenreOptions[index];
+        final isSelected = selectedGenreCode == option.code;
+        final label = genreLabel(l10n, option.code);
+
+        return ChoiceChip(
+          label: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+            ),
+          ),
+          selected: isSelected,
+          showCheckmark: false,
+          visualDensity: VisualDensity.compact,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          labelPadding: EdgeInsets.zero,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: const StadiumBorder(),
+          side: BorderSide.none,
+          selectedColor: colorScheme.primary,
+          backgroundColor: Colors.grey.shade200,
+          onSelected: isLoading
+              ? null
+              : (_) => onGenreChanged?.call(option.code),
+        );
+      },
     );
   }
+}
 
-  Widget _buildFilterChip(
-    BuildContext context, {
-    required String label,
-    required bool selected,
-    required ValueChanged<bool>? onSelected,
-  }) {
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final bool isLoading;
+  final ValueChanged<bool>? onSelected;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.isLoading,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return FilterChip(
@@ -267,7 +277,7 @@ class _SearchFilterChipRow extends StatelessWidget {
       side: BorderSide.none,
       selectedColor: colorScheme.secondary,
       backgroundColor: colorScheme.secondaryContainer.withValues(alpha: 0.55),
-      onSelected: isLoading ? null : (value) => onSelected?.call(value),
+      onSelected: isLoading ? null : onSelected,
     );
   }
 }
