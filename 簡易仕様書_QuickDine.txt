@@ -61,13 +61,13 @@ Dart 3.x / Flutter
 
 ## 動作対象端末・OS
 ### 動作対象OS
-- Android（Flutter 標準 minSdk 以上）
-- iOS（Flutter 標準対応バージョン以上）
+- Android: Android 5.0 (API Level 21) 以上 (google_maps_flutter, geolocator パッケージ要件)
+- iOS: iOS 14.0 以上 (google_maps_flutter / Google Maps SDK 要件)
 ※ 位置情報（GPS）とインターネット接続が必要
 ※ パッケージ ID: com.vrowdice.quick_dine
 
 ## 開発期間
-2026年6月10日〜2026年6月18日
+2026年6月10日〜2026年6月21日
 
 ## アプリケーション機能
 
